@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const cardStyle = {
     width: "35%",
-    height: "50vh",
+    height: "35vh",
     background: "#25242D",
     borderRadius: "10px",
     position: "absolute",

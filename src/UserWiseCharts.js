@@ -28,6 +28,8 @@ import { CSVLink } from "react-csv";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { ImageEncoded } from "./Components/ImageEncoded";
+import ExcelJS from "exceljs";
 
 const UserWiseCharts = () => {
   const [getLedger, setGetLedger] = useState([]);
@@ -125,13 +127,45 @@ const UserWiseCharts = () => {
     link.download = "data.csv";
     link.click();
   };
+  // ----------------------------------------------------
 
-  const handleDownloadXLSX = () => {
-    const ws = XLSX.utils.aoa_to_sheet(exportTableHeading);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Sheet 1");
-    XLSX.writeFile(wb, "data.xlsx");
+  const handleDownloadXLSX = async () => {
+    const workbook = new ExcelJS.Workbook(); //create excel object instance  (1st step)
+
+    const worksheet = workbook.addWorksheet("Sheet 1");
+    const imgBase64 = ImageEncoded;
+    const imageId = workbook.addImage({
+      base64: imgBase64,
+      extension: "png",
+    });
+
+    worksheet.addImage(imageId, "A2:B8");
+
+    exportTableHeading.forEach((row) => {
+      worksheet.addRow(row);
+    });
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    console.log(url);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "data.xlsx";
+    a.click();
   };
+
+  // ----------------
+  // const handleDownloadXLSX = () => {
+  //   const ws = XLSX.utils.aoa_to_sheet(exportTableHeading);
+  //   const wb = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(wb, ws, "Sheet 1");
+  //   XLSX.writeFile(wb, "data.xlsx");
+  // };
+  // ----------------
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
     doc.text(10, 10, "Report");
@@ -142,6 +176,7 @@ const UserWiseCharts = () => {
     });
     doc.save("data.pdf");
   };
+
   const typeOfDownloads = () => {
     switch (exportType) {
       case "CSV":

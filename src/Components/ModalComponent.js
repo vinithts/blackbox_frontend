@@ -10,11 +10,11 @@ import { toast } from "react-toastify";
 const ModalComponent = ({ open, handleClose }) => {
   const cardStyle = {
     width: "50%",
-    height: "80vh",
+    height: "63vh",
     background: "#25242D",
     borderRadius: "10px",
     position: "absolute",
-    top: "10%",
+    top: "30%",
     left: "25%",
     transform: "translate(-50% -50%)",
     "@media (max-width: 768px)": {
