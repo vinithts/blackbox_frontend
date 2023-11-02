@@ -31,6 +31,8 @@ import "jspdf-autotable";
 import { ImageEncoded } from "./Components/ImageEncoded";
 import ExcelJS from "exceljs";
 
+import logo from "./Assets/first_logo.png";
+
 const UserWiseCharts = () => {
   const [getLedger, setGetLedger] = useState([]);
   const [PortFoliotype, setPortFolioType] = useState("");
@@ -139,7 +141,8 @@ const UserWiseCharts = () => {
       extension: "png",
     });
 
-    worksheet.addImage(imageId, "A2:B8");
+    // worksheet.addImage(imageId, "A2:B8");
+    worksheet.addImage(imageId, "A2:E8");
 
     exportTableHeading.forEach((row) => {
       worksheet.addRow(row);
@@ -166,14 +169,31 @@ const UserWiseCharts = () => {
   //   XLSX.writeFile(wb, "data.xlsx");
   // };
   // ----------------
+  // const handleDownloadPDF = () => {
+  //   const doc = new jsPDF();
+  //   doc.text(10, 10, "Report");
+  //   doc.autoTable({
+  //     startY: 20,
+  //     head: [exportTableHeading[0]],
+  //     body: exportTableHeading.slice(1),
+  //   });
+  //   doc.save("data.pdf");
+  // };
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-    doc.text(10, 10, "Report");
+
+    const imgData = logo;
+
+    doc.addImage(imgData, "PNG", 13, 20, 150, 30);
+
+    // doc.text(80, 10, "First Choice \n for your second income");
+
     doc.autoTable({
-      startY: 20,
+      startY: 60,
       head: [exportTableHeading[0]],
       body: exportTableHeading.slice(1),
     });
+
     doc.save("data.pdf");
   };
 
