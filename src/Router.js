@@ -19,6 +19,7 @@ import Login from "./Pages/Login";
 import DashBoard from "./Pages/DashBoard";
 import DashboardPage from "./Components/DashboardPage";
 import UserWiseCharts from "./UserWiseCharts";
+import Upload from "./Components/Upload";
 
 const Router = () => {
   return useRoutes([
@@ -29,6 +30,7 @@ const Router = () => {
       children: [
         { path: "/Dashboard", element: <DashBoard /> },
         { path: "userWiseChart", element: <UserWiseCharts /> },
+        { path: "upload", element: <Upload /> },
       ],
     },
   ]);
