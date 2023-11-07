@@ -22,6 +22,9 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
       height: 350,
       type: "line",
     },
+    toolbar: {
+      show: false,
+    },
     stroke: {
       curve: "smooth",
     },
@@ -35,6 +38,7 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
         style: {
           colors: "white",
         },
+        // offsetX: userWise ? 200 : 0,
       },
     },
     markers: {

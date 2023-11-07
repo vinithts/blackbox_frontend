@@ -316,9 +316,9 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
   //   console.log(b - a);
   // };
   useEffect(() => {
-    if (fromDate && toDate) {
-      getUploadFilesLedger();
-    }
+    // if (fromDate && toDate) {
+    getUploadFilesLedger();
+    // }
     dropDownData(filteredData);
   }, [fromDate, toDate, page || rowsPerPage]);
   // useEffect(() => {
@@ -402,7 +402,7 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
         <>
           <Card sx={{ padding: "15px", width: "100%", background: "#25242D" }}>
             <Grid container spacing={2} p={2}>
-              <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
+              {/* <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
                 <Form.Group controlId="formFile">
                   <Form.Label style={{ color: "gray", fontWeight: "600" }}>
                     Upload csv,xlsx
@@ -413,7 +413,7 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                     onChange={handleFileChange}
                   />
                 </Form.Group>
-              </Grid>
+              </Grid> */}
               <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
                 <DatePickerComponent
                   label={"From Date"}
@@ -472,110 +472,107 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                 />
               </Grid> */}
             </Grid>
+            {/* {UserIDtype && PortFoliotype && ( */}
+            <Box sx={{ padding: "15px" }}>
+              {data.length > 0 ? (
+                <Paper sx={{ overflow: "hidden", border: "1px solid #D9D9D9" }}>
+                  <TableContainer sx={{ maxHeight: 440 }}>
+                    <Table stickyHeader aria-label="sticky table">
+                      <TableHead>
+                        <TableRow>
+                          {keys.map((item, index) => (
+                            <TableCell
+                              key={index}
+                              sx={{
+                                background: " rgb(23, 23, 33)",
+                                color: "white",
+                                fontWeight: "600",
+                                textAlign: "center",
+                                // border: "1px solid white",
+                              }}
+                            >
+                              {item}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      {filteredData
 
-            {UserIDtype && PortFoliotype && (
-              <Box sx={{ padding: "15px" }}>
-                {data.length > 0 ? (
-                  <Paper
-                    sx={{ overflow: "hidden", border: "1px solid #D9D9D9" }}
-                  >
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                      <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                          <TableRow>
-                            {keys.map((item, index) => (
-                              <TableCell
-                                key={index}
-                                sx={{
-                                  background: " rgb(23, 23, 33)",
-                                  color: "white",
-                                  fontWeight: "600",
-                                  textAlign: "center",
-                                  // border: "1px solid white",
-                                }}
-                              >
-                                {item}
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        </TableHead>
-                        {filteredData
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((value, Rowindex) => {
+                          return (
+                            <TableRow key={Rowindex}>
+                              {keys.map((allData, Colindex) => (
+                                <TableCell
+                                  align="center"
+                                  key={Colindex}
+                                  sx={{
+                                    background: "#25242D",
+                                    color: "gray",
+                                    textAlign: "center",
+                                    // border: "1px solid white",
+                                  }}
+                                >
+                                  {allData === "Remarks"
+                                    ? value.Remarks.slice(0, 15)
+                                    : value[allData]}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          );
+                        })}
+                    </Table>
+                  </TableContainer>
 
-                          .slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                          .map((value, Rowindex) => {
-                            return (
-                              <TableRow key={Rowindex}>
-                                {keys.map((allData, Colindex) => (
-                                  <TableCell
-                                    align="center"
-                                    key={Colindex}
-                                    sx={{
-                                      background: "#25242D",
-                                      color: "gray",
-                                      textAlign: "center",
-                                      // border: "1px solid white",
-                                    }}
-                                  >
-                                    {allData === "Remarks"
-                                      ? value.Remarks.slice(0, 15)
-                                      : value[allData]}
-                                  </TableCell>
-                                ))}
-                              </TableRow>
-                            );
-                          })}
-                      </Table>
-                    </TableContainer>
-
-                    <TablePagination
-                      rowsPerPageOptions={[10, 25, 100]}
-                      component="div"
-                      count={data.length}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                      sx={{ background: "#25242D", color: "white" }}
-                    />
-                    <div
-                      style={{
-                        padding: "10px",
-                        background: "#25242D",
-                        color: "white",
-                      }}
-                    >
-                      <Typography
-                        sx={{ paddingRight: "10rem", color: "#90EE90" }}
-                      >
-                        {`Total Profit :  ${Math.round(sellValue)}`}
-                        &nbsp;
-                      </Typography>
-                      {/* <Typography
-                          sx={{ color: "red" }}
-                        >{`Total Loss : -${Math.round(loss)}`}</Typography> */}
-                    </div>
-                  </Paper>
-                ) : (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      padding: "5px",
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 100]}
+                    component="div"
+                    count={data.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    sx={{ background: "#25242D", color: "white" }}
+                  />
+                  <div
+                    style={{
+                      padding: "10px",
+                      background: "#25242D",
+                      color: "white",
                     }}
                   >
-                    <Typography>
-                      <AiOutlineExclamationCircle color="red" size={20} />
+                    <Typography
+                      sx={{ paddingRight: "10rem", color: "#90EE90" }}
+                    >
+                      {`Total Profit :  ${Math.round(sellValue)}`}
+                      &nbsp;
                     </Typography>
-                    <Typography sx={{ padding: "5px", color: "white" }}>
-                      There is no data found !
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-            )}
+                    {/* <Typography
+                          sx={{ color: "red" }}
+                        >{`Total Loss : -${Math.round(loss)}`}</Typography> */}
+                  </div>
+                </Paper>
+              ) : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "5px",
+                  }}
+                >
+                  <Typography>
+                    <AiOutlineExclamationCircle color="red" size={20} />
+                  </Typography>
+                  <Typography sx={{ padding: "5px", color: "white" }}>
+                    There is no data found !
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+            {/* )} */}
           </Card>
         </>
       )}

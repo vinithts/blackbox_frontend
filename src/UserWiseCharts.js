@@ -92,17 +92,7 @@ const UserWiseCharts = () => {
     .filter((e) => e.User_ID === PortFoliotype)
     .map((data) => data.Avg_Price);
 
-  const drawerWidth = 240;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const navigate = useNavigate();
-  const handleNav = (nav) => {
-    navigate(nav);
-  };
+  console.log(userIdWiseFilter);
   const date_Range = [
     "This Month",
     "Last Month",
@@ -321,9 +311,6 @@ const UserWiseCharts = () => {
                   </Button>
                 </Grid>
               )}
-              {/* <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
-                
-              </Grid> */}
             </>
           )}
         </Grid>
@@ -374,12 +361,14 @@ const UserWiseCharts = () => {
           </tbody>
         </table>
       </div> */}
-      <Charts
-        data1={filterUserIdAvgValues}
-        downData1={uniquieUserId}
-        userWise
-        data2={userIdWiseFilter}
-      />
+      {PortFoliotype && dateRange && (
+        <Charts
+          data1={filterUserIdAvgValues}
+          downData1={uniquieUserId}
+          userWise
+          data2={userIdWiseFilter}
+        />
+      )}
     </div>
   );
 };
