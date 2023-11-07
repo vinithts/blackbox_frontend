@@ -5,6 +5,8 @@ import Login from "./Pages/Login";
 import { useState } from "react";
 import { instance } from "./Api";
 import UserWiseCharts from "./UserWiseCharts";
+import { ToastContainer } from "react-toastify";
+import Router from "./Router";
 
 function App() {
   // const Routes = useRoutes([
@@ -25,11 +27,13 @@ function App() {
         className="App"
         style={{ background: "#171721", minHeight: "100vh" }}
       >
-        <Routes>
+        {/* <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<DashBoard />} />
           <Route path="/userWiseChart" element={<UserWiseCharts />} />
-        </Routes>
+        </Routes> */}
+        <Router />
+        <ToastContainer />
       </div>
     </BrowserRouter>
   );

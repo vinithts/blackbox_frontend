@@ -8,7 +8,7 @@ export const NavConfig = [
   },
   {
     name: "UserWise",
-    path: "/userWiseChart",
+    path: "/Dashboard/userWiseChart",
     icon: <SupervisedUserCircleIcon color="white" />,
   },
 ];

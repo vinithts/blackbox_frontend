@@ -4,6 +4,7 @@ import { Box, Button, Grid, Typography } from "@mui/material";
 import InputComponent from "../Components/InputComponent";
 import { instance } from "../Api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 const Login = () => {
   const cardStyle = {
     width: "35%",
@@ -48,9 +49,17 @@ const Login = () => {
       );
       if (response.status === 200) {
         navigate("/dashboard");
+        toast.success("login Successfully !", {
+          position: toast.POSITION.BOTTOM_RIGHT,
+          className: "foo-bar",
+        });
       }
     } catch (e) {
       console.log(e);
+      toast.error("Something went to wrong !", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
     }
   };
 

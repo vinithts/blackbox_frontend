@@ -5,17 +5,17 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
   const options = {
     series: [
       {
-        name: "TEAM A",
+        name: userWise ? downData1.toString() : "",
         type: "area",
         data: !userWise
           ? data1.map((e) => Number(e))
           : data2.map((e) => Number(e)),
       },
-      {
-        name: "TEAM B",
-        type: "line",
-        data: !userWise ? data1.map((e) => Number(e) + 20) : [],
-      },
+      // {
+      //   name: "TEAM B",
+      //   type: "line",
+      //   data: !userWise ? data1.map((e) => Number(e) + 20) : [],
+      // },
     ],
     chart: {
       height: 350,
@@ -28,7 +28,7 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
       type: "solid",
       opacity: [0.35, 1],
     },
-    labels: downData1.map((e) => e),
+    labels: userWise ? [downData1.toString()] : downData1.map((e) => e),
     markers: {
       size: 0,
     },
@@ -38,12 +38,12 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
           text: "Series A",
         },
       },
-      {
-        opposite: true,
-        title: {
-          text: "Series B",
-        },
-      },
+      // {
+      //   opposite: true,
+      //   title: {
+      //     text: "Series B",
+      //   },
+      // },
     ],
     tooltip: {
       shared: true,
@@ -51,7 +51,7 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
       y: {
         formatter: function (y) {
           if (typeof y !== "undefined") {
-            return y.toFixed(0) + " points";
+            return y.toFixed(0) + " Avg_Price";
           }
           return y;
         },

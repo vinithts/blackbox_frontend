@@ -33,6 +33,10 @@ export async function getCustomersDetails() {
     return result;
   } catch (e) {
     console.log("err", e);
+    toast.error("Something Went to wrong  !", {
+      position: toast.POSITION.BOTTOM_RIGHT,
+      className: "foo-bar",
+    });
   }
 }
 const AccordionComponent = ({ title, trade, viewCus }) => {
@@ -96,18 +100,23 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
   let Portfolio_Name = [];
   const dropDownData = (val) => {
     const result = val
-      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
       .map((e) => {
         if (e.User_ID || e.Portfolio_Name) {
           user.push(e.User_ID);
           Portfolio_Name.push(e.Portfolio_Name);
         }
       });
-
-    setPortfolio(Portfolio_Name);
-    setUserId(user);
+    const removeDuplicatePortfolio = new Set(Portfolio_Name);
+    const updatePortfolio = [...removeDuplicatePortfolio];
+    const removeDuplicateUserId = new Set(user);
+    const updateUserId = [...removeDuplicateUserId];
+    console.log(updatePortfolio);
+    setPortfolio(updatePortfolio);
+    setUserId(updateUserId);
     return result;
   };
+  // console.log(Portfolio);
   const getUploadFilesLedger = async () => {
     try {
       const response = await instance.get(
@@ -133,6 +142,10 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
       }
     } catch (e) {
       console.log(e);
+      toast.error("Something went to wrong !", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
     }
   };
   // console.log(totalValues);
@@ -434,7 +447,10 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                   arr={Portfolio}
                   label={"Portfolio_Name"}
                   value={PortFoliotype}
-                  onChange={(e) => setPortFolioType(e.target.value)}
+                  onChange={(e) => {
+                    setPortFolioType(e.target.value);
+                    getUploadFilesLedger();
+                  }}
                 />
               </Grid>
               <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
@@ -503,7 +519,9 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                                       // border: "1px solid white",
                                     }}
                                   >
-                                    {value[allData]}
+                                    {allData === "Remarks"
+                                      ? value.Remarks.slice(0, 15)
+                                      : value[allData]}
                                   </TableCell>
                                 ))}
                               </TableRow>

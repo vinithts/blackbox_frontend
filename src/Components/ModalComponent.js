@@ -67,6 +67,10 @@ const ModalComponent = ({ open, handleClose }) => {
       handleClose();
     } catch (e) {
       console.log(e);
+      toast.error("Something went to wrong !", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
     }
   };
   const gender = ["Male", "Female"];

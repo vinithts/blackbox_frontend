@@ -14,6 +14,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  TextField,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -21,7 +22,6 @@ import DropDown from "./Components/DropDown";
 import { instance } from "./Api";
 import NavBar from "./Components/NavBar";
 import DatePickerComponent from "./Components/DatePickerComponent";
-import { NavConfig } from "./NavConfig";
 import { useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import { CSVLink } from "react-csv";
@@ -30,7 +30,8 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { ImageEncoded } from "./Components/ImageEncoded";
 import ExcelJS from "exceljs";
-
+import { toast } from "react-toastify";
+import { NavConfig } from "./Components/sideConfig";
 import logo from "./Assets/first_logo.png";
 
 const UserWiseCharts = () => {
@@ -46,11 +47,23 @@ const UserWiseCharts = () => {
       }
     } catch (e) {
       console.log(e);
+      toast.error("Something went to wrong !", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
     }
   };
   const filterUserId = getLedger.map((userId) => userId.User_ID);
   const userIDset = new Set(filterUserId);
   const uniqueId = [...userIDset];
+
+  // selected userId chart
+  const chartFilterUserId = getLedger
+    .map((selectedId) => selectedId.User_ID)
+    .filter((e) => e === PortFoliotype);
+  const selectedUserId = new Set(chartFilterUserId);
+  const uniquieUserId = [...selectedUserId];
+  console.log(uniquieUserId);
   useEffect(() => {
     chartsValues();
   }, []);
@@ -128,6 +141,10 @@ const UserWiseCharts = () => {
     link.href = URL.createObjectURL(blob);
     link.download = "data.csv";
     link.click();
+    toast.success("Downloaded Successfully !", {
+      position: toast.POSITION.BOTTOM_RIGHT,
+      className: "foo-bar",
+    });
   };
   // ----------------------------------------------------
 
@@ -141,7 +158,6 @@ const UserWiseCharts = () => {
       extension: "png",
     });
 
-    // worksheet.addImage(imageId, "A2:B8");
     worksheet.addImage(imageId, "A2:E8");
 
     exportTableHeading.forEach((row) => {
@@ -159,6 +175,10 @@ const UserWiseCharts = () => {
     a.href = url;
     a.download = "data.xlsx";
     a.click();
+    toast.success("Downloaded Successfully !", {
+      position: toast.POSITION.BOTTOM_RIGHT,
+      className: "foo-bar",
+    });
   };
 
   // ----------------
@@ -169,32 +189,22 @@ const UserWiseCharts = () => {
   //   XLSX.writeFile(wb, "data.xlsx");
   // };
   // ----------------
-  // const handleDownloadPDF = () => {
-  //   const doc = new jsPDF();
-  //   doc.text(10, 10, "Report");
-  //   doc.autoTable({
-  //     startY: 20,
-  //     head: [exportTableHeading[0]],
-  //     body: exportTableHeading.slice(1),
-  //   });
-  //   doc.save("data.pdf");
-  // };
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-
+    // doc.text(10, 10, "Report");
     const imgData = logo;
 
     doc.addImage(imgData, "PNG", 13, 20, 150, 30);
-
-    // doc.text(80, 10, "First Choice \n for your second income");
-
     doc.autoTable({
       startY: 60,
       head: [exportTableHeading[0]],
       body: exportTableHeading.slice(1),
     });
-
     doc.save("data.pdf");
+    toast.success("Downloaded Successfully !", {
+      position: toast.POSITION.BOTTOM_RIGHT,
+      className: "foo-bar",
+    });
   };
 
   const typeOfDownloads = () => {
@@ -233,10 +243,15 @@ const UserWiseCharts = () => {
       </List>
     </div>
   );
+  // const [mobileNumber, setMobileNumber] = useState("");
+  // const handleMobileNumber = (event) => {
+  //   const data = event.target.value.replace(/[^0-9]/g, "").slice(0, 10);
+  //   setMobileNumber(data);
+  // };
 
   return (
     <div>
-      <Box sx={{ display: "flex" }}>
+      {/* <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar
           position="fixed"
@@ -317,116 +332,117 @@ const UserWiseCharts = () => {
         >
           {" "}
           <Toolbar />
-          <Box sx={{ padding: "10px" }}>
-            <Typography
-              variant="h4"
-              sx={{ color: "white", textAlign: "center", fontWeight: "600" }}
-            >
-              UserWise
-            </Typography>
+        
+        </Box>
+      </Box> */}
+      <Box sx={{ padding: "10px" }}>
+        <Typography
+          variant="h4"
+          sx={{ color: "white", textAlign: "center", fontWeight: "600" }}
+        >
+          UserWise
+        </Typography>
 
-            <Grid container spacing={2} p={2}>
-              <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-                <DropDown
-                  arr={uniqueId}
-                  label={"User Wise"}
-                  value={PortFoliotype}
-                  onChange={handleUserIdChange}
-                />
-              </Grid>
-              <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-                <DropDown
-                  arr={date_Range}
-                  label={"Date Range"}
-                  value={dateRange}
+        <Grid container spacing={2} p={2}>
+          <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
+            <DropDown
+              arr={uniqueId}
+              label={"User Wise"}
+              value={PortFoliotype}
+              onChange={handleUserIdChange}
+            />
+          </Grid>
+          <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
+            <DropDown
+              arr={date_Range}
+              label={"Date Range"}
+              value={dateRange}
+              onChange={(e) => {
+                setDateRange(e.target.value);
+                setExportData({
+                  ...exportData,
+                  exportDateRange: e.target.value,
+                });
+              }}
+            />
+          </Grid>
+          <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
+            <br />
+            <Button
+              variant="contained"
+              sx={{ background: "white", color: "black", padding: "10px" }}
+              fullWidth
+              onClick={handleAddCount}
+            >
+              More
+            </Button>
+          </Grid>
+          {count >= 1 && (
+            <>
+              {" "}
+              <Grid xl={4} lg={4} md={4} sm={12} xs={12} p={1.2}>
+                <DatePickerComponent
+                  label={"From Date"}
+                  name={"From Date"}
+                  value={fromDate}
                   onChange={(e) => {
-                    setDateRange(e.target.value);
+                    setFromDate(e.target.value);
                     setExportData({
                       ...exportData,
-                      exportDateRange: e.target.value,
+                      exportFromDate: e.target.value,
+                    });
+                  }}
+                />
+              </Grid>
+              <Grid xl={4} lg={4} md={4} sm={12} xs={12} p={1.2}>
+                <DatePickerComponent
+                  label={"To Date"}
+                  name={"To Date"}
+                  value={toDate}
+                  onChange={(e) => {
+                    setToDate(e.target.value);
+                    setExportData({
+                      ...exportData,
+                      exportToDate: e.target.value,
                     });
                   }}
                 />
               </Grid>
               <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-                <br />
-                <Button
-                  variant="contained"
-                  sx={{ background: "white", color: "black", padding: "10px" }}
-                  fullWidth
-                  onClick={handleAddCount}
-                >
-                  More
-                </Button>
-              </Grid>
-              {count >= 1 && (
-                <>
-                  {" "}
-                  <Grid xl={4} lg={4} md={4} sm={12} xs={12} p={1.2}>
-                    <DatePickerComponent
-                      label={"From Date"}
-                      name={"From Date"}
-                      value={fromDate}
-                      onChange={(e) => {
-                        setFromDate(e.target.value);
-                        setExportData({
-                          ...exportData,
-                          exportFromDate: e.target.value,
-                        });
-                      }}
-                    />
-                  </Grid>
-                  <Grid xl={4} lg={4} md={4} sm={12} xs={12} p={1.2}>
-                    <DatePickerComponent
-                      label={"To Date"}
-                      name={"To Date"}
-                      value={toDate}
-                      onChange={(e) => {
-                        setToDate(e.target.value);
-                        setExportData({
-                          ...exportData,
-                          exportToDate: e.target.value,
-                        });
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-                    <DropDown
-                      arr={export_Type}
-                      label={"Export Type"}
-                      value={exportType}
-                      onChange={(e) => setExportType(e.target.value)}
-                    />
-                  </Grid>{" "}
-                </>
-              )}
-
-              {exportType.length > 0 && (
-                <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-                  <br />
-                  {/* <CSVLink data={exportTableHeading} filename={"data.csv"}> */}
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    sx={{ padding: "10px" }}
-                    onClick={typeOfDownloads}
-                  >
-                    Export
-                  </Button>
-                  {/* </CSVLink> */}
-                </Grid>
-              )}
-              <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
-                <Charts
-                  data1={filterUserIdAvgValues}
-                  downData1={uniqueId}
-                  userWise
-                  data2={userIdWiseFilter}
+                <DropDown
+                  arr={export_Type}
+                  label={"Export Type"}
+                  value={exportType}
+                  onChange={(e) => setExportType(e.target.value)}
                 />
-              </Grid>
+              </Grid>{" "}
+            </>
+          )}
+
+          {exportType.length > 0 && (
+            <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
+              <br />
+              {/* <CSVLink data={exportTableHeading} filename={"data.csv"}> */}
+              <Button
+                variant="contained"
+                fullWidth
+                sx={{ padding: "10px" }}
+                onClick={typeOfDownloads}
+              >
+                Export
+              </Button>
+              {/* </CSVLink> */}
             </Grid>
-          </Box>
-        </Box>
+          )}
+          <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
+            <Charts
+              data1={filterUserIdAvgValues}
+              downData1={uniquieUserId}
+              userWise
+              data2={userIdWiseFilter}
+            />
+          </Grid>
+        </Grid>
       </Box>
       <br />
 

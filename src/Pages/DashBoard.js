@@ -24,8 +24,9 @@ import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { NavConfig } from "../NavConfig";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { NavConfig } from "../Components/sideConfig";
 
 const DashBoard = () => {
   // const date = new Date();
@@ -42,6 +43,10 @@ const DashBoard = () => {
       }
     } catch (e) {
       console.log(e);
+      toast.error("Something went to wrong !", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
     }
   };
 
@@ -78,29 +83,29 @@ const DashBoard = () => {
   const handleNav = (nav) => {
     navigate(nav);
   };
-  const drawer = (
-    <div>
-      <Toolbar />
-      <Divider />
-      <List>
-        {NavConfig.map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton onClick={() => handleNav(text.path)}>
-              <ListItemIcon color="white" sx={{ color: "white" }}>
-                {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                {text.icon}
-              </ListItemIcon>
-              <ListItemText primary={text.name} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
+  // const drawer = (
+  //   <div>
+  //     <Toolbar />
+  //     <Divider />
+  //     <List>
+  //       {NavConfig.map((text, index) => (
+  //         <ListItem key={text} disablePadding>
+  //           <ListItemButton onClick={() => handleNav(text.path)}>
+  //             <ListItemIcon color="white" sx={{ color: "white" }}>
+  //               {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+  //               {text.icon}
+  //             </ListItemIcon>
+  //             <ListItemText primary={text.name} />
+  //           </ListItemButton>
+  //         </ListItem>
+  //       ))}
+  //     </List>
+  //   </div>
+  // );
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
+      {/* <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar
           position="fixed"
@@ -182,19 +187,20 @@ const DashBoard = () => {
         >
           {" "}
           <Toolbar />
-          <div>
-            {/* <NavBar /> */}
-            <br />
-            <DashboardApplet />
-            <AddCustomer />
-
-            <br />
-            <Trade />
-            <Charts data1={filterUserIdAvgValues} downData1={uniqueId} />
-            <ToastContainer />
-          </div>
+         
+          <Outlet />
         </Box>
-      </Box>
+      </Box> */}
+      <div>
+        <br />
+        <DashboardApplet />
+        <AddCustomer />
+
+        <br />
+        <Trade />
+        <Charts data1={filterUserIdAvgValues} downData1={uniqueId} />
+        <ToastContainer />
+      </div>
     </>
   );
 };

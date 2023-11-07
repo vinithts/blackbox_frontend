@@ -3,6 +3,7 @@ import AppletCard from "../Components/AppletCard";
 import { Grid } from "@mui/material";
 import { instance } from "../Api";
 import { getCustomersDetails } from "../Components/Accordion";
+import { toast } from "react-toastify";
 
 const DashboardApplet = () => {
   const [PortfolioDetails, setPortfolioDetails] = useState([]);
@@ -22,6 +23,10 @@ const DashboardApplet = () => {
       }
     } catch (e) {
       console.log(e);
+      toast.error("Something went to wrong !", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
     }
   };
   // const customerDetails = async () => {
