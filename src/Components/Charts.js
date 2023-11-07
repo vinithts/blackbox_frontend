@@ -1,3 +1,4 @@
+import { Card } from "@mui/material";
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
@@ -29,13 +30,23 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
       opacity: [0.35, 1],
     },
     labels: userWise ? [downData1.toString()] : downData1.map((e) => e),
+    xaxis: {
+      labels: {
+        style: {
+          colors: "white",
+        },
+      },
+    },
     markers: {
       size: 0,
     },
     yaxis: [
       {
         title: {
-          text: "Series A",
+          text: "All Customers",
+          style: {
+            color: "white",
+          },
         },
       },
       // {
@@ -60,13 +71,15 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
   };
 
   return (
-    <div id="chart">
-      <ReactApexChart
-        options={options}
-        series={options.series}
-        type="line"
-        height={350}
-      />
+    <div id="chart" style={{ padding: "18px" }}>
+      <Card sx={{ background: "#25242D", borderRadius: "15px" }}>
+        <ReactApexChart
+          options={options}
+          series={options.series}
+          type="line"
+          height={340}
+        />
+      </Card>
     </div>
   );
 }
