@@ -224,117 +224,9 @@ const UserWiseCharts = () => {
   const handleAddCount = () => {
     setCount(count + 1);
   };
-  const drawer = (
-    <div>
-      <Toolbar />
-      <Divider />
-      <List>
-        {NavConfig.map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton onClick={() => handleNav(text.path)}>
-              <ListItemIcon color="white" sx={{ color: "white" }}>
-                {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                {text.icon}
-              </ListItemIcon>
-              <ListItemText primary={text.name} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
-  // const [mobileNumber, setMobileNumber] = useState("");
-  // const handleMobileNumber = (event) => {
-  //   const data = event.target.value.replace(/[^0-9]/g, "").slice(0, 10);
-  //   setMobileNumber(data);
-  // };
 
   return (
     <div>
-      {/* <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar
-          position="fixed"
-          sx={{
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
-            ml: { sm: `${drawerWidth}px` },
-            background: "#25242D",
-          }}
-        >
-          {" "}
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{ fontWeight: "600" }}
-            >
-              Black Box
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
-        <Box
-          component="nav"
-          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-          aria-label="mailbox folders"
-        >
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true,
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-                background: "#25242D",
-              },
-            }}
-          >
-            {drawer}
-          </Drawer>
-          <Drawer
-            variant="permanent"
-            sx={{
-              display: { xs: "none", sm: "block" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-                background: "#25242D",
-                color: "white",
-              },
-            }}
-            open
-          >
-            {drawer}
-          </Drawer>
-        </Box>
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            p: 3,
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
-          }}
-        >
-          {" "}
-          <Toolbar />
-        
-        </Box>
-      </Box> */}
       <Box sx={{ padding: "10px" }}>
         <Typography
           variant="h4"
@@ -415,33 +307,25 @@ const UserWiseCharts = () => {
                   value={exportType}
                   onChange={(e) => setExportType(e.target.value)}
                 />
-              </Grid>{" "}
+              </Grid>
+              {exportType.length > 0 && (
+                <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
+                  <br />
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    sx={{ padding: "10px" }}
+                    onClick={typeOfDownloads}
+                  >
+                    Export
+                  </Button>
+                </Grid>
+              )}
+              {/* <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
+                
+              </Grid> */}
             </>
           )}
-
-          {exportType.length > 0 && (
-            <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-              <br />
-              {/* <CSVLink data={exportTableHeading} filename={"data.csv"}> */}
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{ padding: "10px" }}
-                onClick={typeOfDownloads}
-              >
-                Export
-              </Button>
-              {/* </CSVLink> */}
-            </Grid>
-          )}
-          <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
-            <Charts
-              data1={filterUserIdAvgValues}
-              downData1={uniquieUserId}
-              userWise
-              data2={userIdWiseFilter}
-            />
-          </Grid>
         </Grid>
       </Box>
       <br />
@@ -490,6 +374,12 @@ const UserWiseCharts = () => {
           </tbody>
         </table>
       </div> */}
+      <Charts
+        data1={filterUserIdAvgValues}
+        downData1={uniquieUserId}
+        userWise
+        data2={userIdWiseFilter}
+      />
     </div>
   );
 };
