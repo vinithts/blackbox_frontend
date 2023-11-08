@@ -20,14 +20,19 @@ import { Outlet, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 
 const SideBar = () => {
-  const drawerWidth = 240;
+  const drawerWidth = 340;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [openSubMenu, setOpenSubMenu] = React.useState(null);
   const navigate = useNavigate();
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  const handleNav = (nav) => {
-    navigate(nav);
+  const handleNav = (nav,index) => {
+    if (NavConfig[index]?.subItems) {
+      setOpenSubMenu(openSubMenu === index ? null : index); // Toggle submenu visibility
+    } else {
+      navigate(nav);
+    }
   };
   const drawer = (
     <div>
@@ -35,14 +40,30 @@ const SideBar = () => {
       <Divider />
       <List>
         {NavConfig.map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton onClick={() => handleNav(text.path)}>
-              <ListItemIcon color="white" sx={{ color: "white" }}>
-                {text.icon}
-              </ListItemIcon>
-              <ListItemText primary={text.name} />
-            </ListItemButton>
-          </ListItem>
+          <div key={text.name}>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => handleNav(text.path, index)}>
+                <ListItemIcon sx={{ color: "white" }}>
+                  {text.icon}
+                </ListItemIcon>
+                <ListItemText primary={text.name} />
+              </ListItemButton>
+            </ListItem>
+
+            {/* Conditionally render subitems if the submenu is open */}
+            {index === openSubMenu &&
+              text.subItems &&
+              text.subItems.map((subItem, subIndex) => (
+                <ListItem key={subItem.name} sx={{ pl: 4 }}>
+                  <ListItemButton onClick={() => navigate(subItem.path)}>
+                    <ListItemIcon sx={{ color: "white" }}>
+                      {subItem.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={subItem.name} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+          </div>
         ))}
       </List>
     </div>

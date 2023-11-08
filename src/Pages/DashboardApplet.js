@@ -43,7 +43,7 @@ const DashboardApplet = () => {
   useEffect((e) => {
     TotalPortfolioDetails();
     getCustomersDetails().then((res) => {
-      const result = res.data.map((e) => Number(e.AMT)).reduce((a, c) => c + a);
+      const result = res.data.map((e) => Number(e.AMT)).reduce((a, c) => c + a,0);
       setCusDetails(result);
     });
   }, []);

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import NavBar from "../Components/NavBar";
 import DashboardApplet from "./DashboardApplet";
-import AddCustomer from "./AddCustomer";
+// import AddCustomer from "./AddCustomer";
 import Trade from "./Trade";
 import { ToastContainer } from "react-bootstrap";
 import Charts from "../Components/Charts";
@@ -194,7 +194,7 @@ const DashBoard = () => {
       <div>
         <br />
         <DashboardApplet />
-        <AddCustomer />
+        {/* <AddCustomer /> */}
 
         <br />
         <Trade />

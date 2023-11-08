@@ -6,7 +6,9 @@
   height: 40vmin;
   pointer-events: none;
 }
-
+.apexcharts-menu-icon,.apexcharts-reset-icon,.apexcharts-pan-icon,.apexcharts-zoom-icon, .apexcharts-selected,.apexcharts-zoomout-icon,.apexcharts-zoomin-icon {
+  display: none;
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

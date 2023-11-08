@@ -20,6 +20,10 @@ import DashBoard from "./Pages/DashBoard";
 import DashboardPage from "./Components/DashboardPage";
 import UserWiseCharts from "./UserWiseCharts";
 import Upload from "./Components/Upload";
+import AddCustomerNew from "./Pages/AddCustomerNew";
+import ViewCustomer from "./Pages/ViewCustomerDetails";
+import Report from "./Report";
+import ViewCustomerDetails from "./Pages/ViewCustomerDetails";
 
 const Router = () => {
   return useRoutes([
@@ -31,6 +35,9 @@ const Router = () => {
         { path: "/Dashboard", element: <DashBoard /> },
         { path: "userWiseChart", element: <UserWiseCharts /> },
         { path: "upload", element: <Upload /> },
+        { path: "addcustomernew", element:<AddCustomerNew/>},
+        { path: "viewcustomer", element:<ViewCustomerDetails/>},
+        // { path: "report", element:<Report/>}
       ],
     },
   ]);

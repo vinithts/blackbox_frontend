@@ -1,8 +1,8 @@
-import { Card } from "@mui/material";
+import { Card, Typography } from "@mui/material";
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
-function ChartComponent({ data1, downData1, userWise, data2 }) {
+function ChartComponent({ data1, downData1, userWise, data2,PortFoliotype,dateRange }) {
   const options = {
     series: [
       {
@@ -44,22 +44,7 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
     markers: {
       size: 0,
     },
-    yaxis: [
-      {
-        title: {
-          text: "All Customers",
-          style: {
-            color: "white",
-          },
-        },
-      },
-      // {
-      //   opposite: true,
-      //   title: {
-      //     text: "Series B",
-      //   },
-      // },
-    ],
+    
     tooltip: {
       shared: true,
       intersect: false,
@@ -73,10 +58,10 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
       },
     },
   };
-
   return (
     <div id="chart" style={{ padding: "18px" }}>
       <Card sx={{ background: "#25242D", borderRadius: "15px" }}>
+        <Typography sx={{color:"white",fontSize:"22px",fontWeight:"700",padding:"18px"}}>All Customers Data</Typography>
         <ReactApexChart
           options={options}
           series={options.series}
@@ -84,6 +69,7 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
           height={340}
         />
       </Card>
+      
     </div>
   );
 }

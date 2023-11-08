@@ -1,6 +1,12 @@
 import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import PeopleAlt from "@mui/icons-material/PeopleAlt";
+import PersonAddAlt from "@mui/icons-material/PersonAddAlt";
+import Streetview from  "@mui/icons-material/Streetview";
+import Report from  "@mui/icons-material/Report";
+import Settings from  "@mui/icons-material/Settings";
+import FileUpload from "@mui/icons-material/FileUpload";
+
 export const NavConfig = [
   {
     name: "Dashboard",
@@ -8,13 +14,42 @@ export const NavConfig = [
     icon: <SpaceDashboardIcon color="white" />,
   },
   {
-    name: "upload",
-    path: "/Dashboard/upload",
-    icon: <CloudUploadIcon color="white" />,
-  },
-  {
     name: "UserWise",
     path: "/Dashboard/userWiseChart",
     icon: <SupervisedUserCircleIcon color="white" />,
+  },
+  {
+    name: "Customer",
+    path: "/Dashboard",
+    icon: <PeopleAlt color="white" />,
+    subItems: [
+      {
+        name: "Add Customer",
+        path: "/Dashboard/addcustomernew",
+        icon: <PersonAddAlt color="white" />,
+      },
+      {
+        name: "View Customer",
+        path: "/Dashboard/viewcustomer",
+        icon: <Streetview color="white" />,
+      },
+    ],
+  },
+  // {
+  //   name: "Report",
+  //   path: "/Dashboard/report",
+  //   icon: <Report color="white" />,
+  // },
+  {
+    name: "Setting",
+    path: "/Dashboard",
+    icon: <Settings color="white" />,
+    subItems: [
+      {
+        name: "Uploads",
+        path: "/Dashboard/addcustomernew",
+        icon: <FileUpload color="white" />,
+      },
+    ],
   },
 ];

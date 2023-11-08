@@ -7,6 +7,7 @@ import { instance } from "./Api";
 import UserWiseCharts from "./UserWiseCharts";
 import { ToastContainer } from "react-toastify";
 import Router from "./Router";
+import '../src/App.css';
 
 function App() {
   // const Routes = useRoutes([
