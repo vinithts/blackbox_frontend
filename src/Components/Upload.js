@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import * as XLSX from "xlsx";
 import { instance } from "../Api";
 import { toast } from "react-toastify";
+import Loading from "./Loading";
 
 const Upload = () => {
   const columnNames = [
@@ -30,10 +31,11 @@ const Upload = () => {
     "NETP&L",
     "TAG",
   ];
+  const [loading, setLoading] = useState(false);
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
-
+    setLoading(true);
     reader.onload = async (event) => {
       const binaryString = event.target.result;
       const workBook = XLSX.read(binaryString, { type: "binary" });
@@ -64,6 +66,7 @@ const Upload = () => {
             position: toast.POSITION.BOTTOM_RIGHT,
             className: "foo-bar",
           });
+          setLoading(false);
         }
 
         // console.log(response);
@@ -82,6 +85,7 @@ const Upload = () => {
   };
   return (
     <div>
+      {loading && <Loading />}
       <Form.Group controlId="formFile">
         <Form.Label style={{ color: "gray", fontWeight: "600" }}>
           Upload csv,xlsx

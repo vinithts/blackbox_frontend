@@ -3,7 +3,14 @@ import React from "react";
 const InputComponent = ({ label, value, onChange, type, name, textArea }) => {
   return (
     <div>
-      <label style={{ color: "gray", fontWeight: "600" }}>{label}</label>
+      <label
+        style={{
+          color: "gray",
+          fontWeight: "600",
+        }}
+      >
+        {label}
+      </label>
       <input
         type={type ? "search" : "text"}
         style={{
