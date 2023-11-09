@@ -14,7 +14,7 @@ const AddCustomerNew = () => {
         borderRadius: "10px",
         position: "absolute",
         top: "20%",
-        left: "25%",
+        left: "35%",
         transform: "translate(-50% -50%)",
         "@media (max-width: 768px)": {
           width: "95%",

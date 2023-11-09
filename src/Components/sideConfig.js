@@ -47,7 +47,7 @@ export const NavConfig = [
     subItems: [
       {
         name: "Uploads",
-        path: "/Dashboard/addcustomernew",
+        path: "/Dashboard/upload",
         icon: <FileUpload color="white" />,
       },
     ],

@@ -92,10 +92,6 @@ function ChartComponent({ data1, downData1, userWise, data2 }) {
     stroke: {
       curve: "straight",
     },
-    title: {
-      text: "All Customers",
-      align: "left",
-    },
     grid: {
       row: {
         colors: ["#f3f3f3", "transparent"],
