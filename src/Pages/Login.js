@@ -11,7 +11,7 @@ const Login = () => {
   const cookies=new Cookies();
   const cardStyle = {
     width: "35%",
-    height: "35vh",
+    height: "40vh",
     background: "#25242D",
     borderRadius: "10px",
     position: "absolute",
@@ -51,7 +51,7 @@ const Login = () => {
         `/api/login?userName=${loginData.email}&password=${loginData.password}`
       );
       if (response.status === 200) {
-        cookies.set('User', JSON.stringify(response.data),{path:"/"});
+        cookies.set("User", JSON.stringify(response.data), { path: "/" });
         navigate("/dashboard");
         toast.success("login Successfully !", {
           position: toast.POSITION.BOTTOM_RIGHT,
