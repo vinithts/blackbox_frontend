@@ -56,12 +56,30 @@ const DashBoard = () => {
   const filterUserId = getLedger.map((userId) => userId.User_ID);
   const userIDset = new Set(filterUserId);
   const uniqueId = [...userIDset];
+  console.log(uniqueId);
 
-  const filterUserIdAvgValues = getLedger.slice(0, 50).map((data) => {
+  const filterUserIdAvgValues = getLedger.map((data) => {
     if (data.User_ID) {
       return data.Avg_Price;
     }
   });
+  console.log(filterUserIdAvgValues);
+  const filterDistintValue = (data) => {
+    const obj = {};
+    for (const char of data) {
+      if (obj[char.User_ID]) {
+        obj[char.User_ID] += Number(char.Avg_Price);
+      } else {
+        obj[char.User_ID] = Number(char.Avg_Price);
+      }
+    }
+    // return obj;
+    const keys = Object.keys(obj);
+    const values = Object.values(obj);
+    return [keys, values];
+  };
+  const result = filterDistintValue(getLedger);
+  console.log("result", result);
   // const userIDData = [];
   // for (let i = 0; i < filterUserId.length; i++) {
   //   for (let j = 0; j < filterUserId.length; j++) {
@@ -198,7 +216,7 @@ const DashBoard = () => {
 
         <br />
         <Trade />
-        <Charts data1={filterUserIdAvgValues} downData1={uniqueId} />
+        <Charts data1={filterUserIdAvgValues} downData1={result} />
         <ToastContainer />
       </div>
     </>
