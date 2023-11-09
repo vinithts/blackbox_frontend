@@ -25,6 +25,7 @@ import { format } from "date-fns";
 import DropDown from "./DropDown";
 import { AccessAlarmTwoTone } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import Loading from "./Loading";
 
 export async function getCustomersDetails() {
   try {
@@ -49,7 +50,7 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
   const [PortFoliotype, setPortFolioType] = useState("");
   const [orderType, setOrderType] = useState("");
   const [UserIDtype, setUserIDType] = useState("");
-
+  const [loading, setLoading] = useState(false);
   // console.log(type);
 
   function parseCustomDate(dateStr) {
@@ -118,6 +119,7 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
   };
   // console.log(Portfolio);
   const getUploadFilesLedger = async () => {
+    setLoading(true);
     try {
       const response = await instance.get(
         `/api/getUploadFilesLedger?fromDate=${
@@ -127,6 +129,7 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
       if (response.status === 200) {
         setData(response.data);
         dropDownData(response.data);
+        setLoading(false);
         // dropDownData(response.data);
         // let BUY = 0;
         // let SELL = 0;
@@ -261,11 +264,13 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
   const [cusDetails, setCusDetails] = useState([]);
 
   useEffect(() => {
+    setLoading(true);
     getCustomersDetails()
       .then((res) => {
         if (res && res.status === 200) {
           setCusDetails(res.data);
           setCusKey(Object.keys(res.data[0]));
+          setLoading(false);
           // console.log("datas", res.data);
         }
       })
@@ -329,80 +334,87 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
   const arr = ["Portfolio_Name", "Order_ID", "User_ID"];
 
   return (
-    <div style={{ padding: "15px" }}>
-      {!trade ? (
-        <Box sx={{ background: "#25242D" }}>
-          <Card sx={{ width: "100%", background: "#25242D", padding: "15px" }}>
-            <Typography
-              sx={{ padding: "15px", color: "white", fontWeight: "600" }}
-            >
-              {" "}
-              {title}
-            </Typography>
-            <Paper
-              sx={{
-                overflow: "hidden",
-                border: "1px solid #D9D9D9",
-                // padding: "15px"
-              }}
-            >
-              <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      {cusKey.map((keys, index) => (
-                        <TableCell
-                          key={keys.id}
-                          align={"center"}
-                          style={{
-                            minWidth: 170,
+    <>
+      {loading && <Loading />}
 
-                            background: "#25242D",
-                            color: "white",
-                            fontWeight: "600",
-                          }}
-                        >
-                          {keys.charAt(0).toUpperCase() + keys.slice(1)}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {cusDetails?.map((pair, i) => (
-                      <TableRow key={i}>
-                        {cusKey?.map((key, index) => (
+      <div style={{ padding: "15px" }}>
+        {!trade ? (
+          <Box sx={{ background: "#25242D" }}>
+            <Card
+              sx={{ width: "100%", background: "#25242D", padding: "15px" }}
+            >
+              <Typography
+                sx={{ padding: "15px", color: "white", fontWeight: "600" }}
+              >
+                {" "}
+                {title}
+              </Typography>
+              <Paper
+                sx={{
+                  overflow: "hidden",
+                  border: "1px solid #D9D9D9",
+                  // padding: "15px"
+                }}
+              >
+                <TableContainer sx={{ maxHeight: 440 }}>
+                  <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                      <TableRow>
+                        {cusKey.map((keys, index) => (
                           <TableCell
-                            sx={{ background: "#25242D", color: "gray" }}
-                            key={index}
-                            align="center"
-                            style={{ minWidth: 170 }}
+                            key={keys.id}
+                            align={"center"}
+                            style={{
+                              minWidth: 170,
+
+                              background: "#25242D",
+                              color: "white",
+                              fontWeight: "600",
+                            }}
                           >
-                            {pair[key]}
+                            {keys.charAt(0).toUpperCase() + keys.slice(1)}
                           </TableCell>
                         ))}
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={12}
-                rowsPerPage={10}
-                page={10}
-                sx={{ background: "#25242D", color: "white" }}
-                // onPageChange={handleChangePage}
-                // onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </Paper>
-          </Card>
-        </Box>
-      ) : (
-        <>
-          <Card sx={{ padding: "15px", width: "100%", background: "#25242D" }}>
-            <Grid container spacing={2} p={2}>
-              {/* <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
+                    </TableHead>
+                    <TableBody>
+                      {cusDetails?.map((pair, i) => (
+                        <TableRow key={i}>
+                          {cusKey?.map((key, index) => (
+                            <TableCell
+                              sx={{ background: "#25242D", color: "gray" }}
+                              key={index}
+                              align="center"
+                              style={{ minWidth: 170 }}
+                            >
+                              {pair[key]}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 100]}
+                  component="div"
+                  count={12}
+                  rowsPerPage={10}
+                  page={10}
+                  sx={{ background: "#25242D", color: "white" }}
+                  // onPageChange={handleChangePage}
+                  // onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Paper>
+            </Card>
+          </Box>
+        ) : (
+          <>
+            <Card
+              sx={{ padding: "15px", width: "100%", background: "#25242D" }}
+            >
+              <Grid container spacing={2} p={2}>
+                {/* <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
                 <Form.Group controlId="formFile">
                   <Form.Label style={{ color: "gray", fontWeight: "600" }}>
                     Upload csv,xlsx
@@ -414,56 +426,56 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                   />
                 </Form.Group>
               </Grid> */}
-              <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
-                <DatePickerComponent
-                  label={"From Date"}
-                  name={"From Date"}
-                  value={fromDate}
-                  onChange={handleFromDate}
-                />
-              </Grid>
-              <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
-                <DatePickerComponent
-                  label={"To Date"}
-                  name={"To Date"}
-                  value={toDate}
-                  onChange={handleToDate}
-                />
-                {/* <DropDown
+                <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
+                  <DatePickerComponent
+                    label={"From Date"}
+                    name={"From Date"}
+                    value={fromDate}
+                    onChange={handleFromDate}
+                  />
+                </Grid>
+                <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
+                  <DatePickerComponent
+                    label={"To Date"}
+                    name={"To Date"}
+                    value={toDate}
+                    onChange={handleToDate}
+                  />
+                  {/* <DropDown
                   arr={arr}
                   label={"Type"}
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                 /> */}
-              </Grid>
-              <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
-                {/* <InputComponent
+                </Grid>
+                <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
+                  {/* <InputComponent
                   label={"Search"}
                   value={filterValue}
                   onChange={(e) => setFilterValue(e.target.value)}
                   type
                 /> */}
-                <DropDown
-                  arr={Portfolio}
-                  label={"Portfolio_Name"}
-                  value={PortFoliotype}
-                  onChange={(e) => {
-                    setPortFolioType(e.target.value);
-                    getUploadFilesLedger();
-                  }}
-                />
-              </Grid>
-              <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
-                <DropDown
-                  arrays={userId}
-                  other
-                  label={"User_ID"}
-                  values={UserIDtype}
-                  onChanges={(e) => setUserIDType(e.target.value)}
-                />
-              </Grid>
+                  <DropDown
+                    arr={Portfolio}
+                    label={"Portfolio_Name"}
+                    value={PortFoliotype}
+                    onChange={(e) => {
+                      setPortFolioType(e.target.value);
+                      getUploadFilesLedger();
+                    }}
+                  />
+                </Grid>
+                <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
+                  <DropDown
+                    arrays={userId}
+                    other
+                    label={"User_ID"}
+                    values={UserIDtype}
+                    onChanges={(e) => setUserIDType(e.target.value)}
+                  />
+                </Grid>
 
-              {/* <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
+                {/* <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
                 <InputComponent
                   label={"Search"}
                   value={filterValue}
@@ -471,112 +483,115 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                   type
                 />
               </Grid> */}
-            </Grid>
-            {/* {UserIDtype && PortFoliotype && ( */}
-            <Box sx={{ padding: "15px" }}>
-              {data.length > 0 ? (
-                <Paper sx={{ overflow: "hidden", border: "1px solid #D9D9D9" }}>
-                  <TableContainer sx={{ maxHeight: 440 }}>
-                    <Table stickyHeader aria-label="sticky table">
-                      <TableHead>
-                        <TableRow>
-                          {keys.map((item, index) => (
-                            <TableCell
-                              key={index}
-                              sx={{
-                                background: " rgb(23, 23, 33)",
-                                color: "white",
-                                fontWeight: "600",
-                                textAlign: "center",
-                                // border: "1px solid white",
-                              }}
-                            >
-                              {item}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      </TableHead>
-                      {filteredData
-
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((value, Rowindex) => {
-                          return (
-                            <TableRow key={Rowindex}>
-                              {keys.map((allData, Colindex) => (
-                                <TableCell
-                                  align="center"
-                                  key={Colindex}
-                                  sx={{
-                                    background: "#25242D",
-                                    color: "gray",
-                                    textAlign: "center",
-                                    // border: "1px solid white",
-                                  }}
-                                >
-                                  {allData === "Remarks"
-                                    ? value.Remarks.slice(0, 15)
-                                    : value[allData]}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          );
-                        })}
-                    </Table>
-                  </TableContainer>
-
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 100]}
-                    component="div"
-                    count={data.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    sx={{ background: "#25242D", color: "white" }}
-                  />
-                  <div
-                    style={{
-                      padding: "10px",
-                      background: "#25242D",
-                      color: "white",
-                    }}
+              </Grid>
+              {/* {UserIDtype && PortFoliotype && ( */}
+              <Box sx={{ padding: "15px" }}>
+                {data.length > 0 ? (
+                  <Paper
+                    sx={{ overflow: "hidden", border: "1px solid #D9D9D9" }}
                   >
-                    <Typography
-                      sx={{ paddingRight: "10rem", color: "#90EE90" }}
+                    <TableContainer sx={{ maxHeight: 440 }}>
+                      <Table stickyHeader aria-label="sticky table">
+                        <TableHead>
+                          <TableRow>
+                            {keys.map((item, index) => (
+                              <TableCell
+                                key={index}
+                                sx={{
+                                  background: " rgb(23, 23, 33)",
+                                  color: "white",
+                                  fontWeight: "600",
+                                  textAlign: "center",
+                                  // border: "1px solid white",
+                                }}
+                              >
+                                {item}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        {filteredData
+
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((value, Rowindex) => {
+                            return (
+                              <TableRow key={Rowindex}>
+                                {keys.map((allData, Colindex) => (
+                                  <TableCell
+                                    align="center"
+                                    key={Colindex}
+                                    sx={{
+                                      background: "#25242D",
+                                      color: "gray",
+                                      textAlign: "center",
+                                      // border: "1px solid white",
+                                    }}
+                                  >
+                                    {allData === "Remarks"
+                                      ? value.Remarks.slice(0, 15)
+                                      : value[allData]}
+                                  </TableCell>
+                                ))}
+                              </TableRow>
+                            );
+                          })}
+                      </Table>
+                    </TableContainer>
+
+                    <TablePagination
+                      rowsPerPageOptions={[10, 25, 100]}
+                      component="div"
+                      count={data.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                      sx={{ background: "#25242D", color: "white" }}
+                    />
+                    <div
+                      style={{
+                        padding: "10px",
+                        background: "#25242D",
+                        color: "white",
+                      }}
                     >
-                      {`Total Profit :  ${Math.round(sellValue)}`}
-                      &nbsp;
-                    </Typography>
-                    {/* <Typography
+                      <Typography
+                        sx={{ paddingRight: "10rem", color: "#90EE90" }}
+                      >
+                        {`Total Profit :  ${Math.round(sellValue)}`}
+                        &nbsp;
+                      </Typography>
+                      {/* <Typography
                           sx={{ color: "red" }}
                         >{`Total Loss : -${Math.round(loss)}`}</Typography> */}
-                  </div>
-                </Paper>
-              ) : (
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "5px",
-                  }}
-                >
-                  <Typography>
-                    <AiOutlineExclamationCircle color="red" size={20} />
-                  </Typography>
-                  <Typography sx={{ padding: "5px", color: "white" }}>
-                    There is no data found !
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-            {/* )} */}
-          </Card>
-        </>
-      )}
-    </div>
+                    </div>
+                  </Paper>
+                ) : (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      padding: "5px",
+                    }}
+                  >
+                    <Typography>
+                      <AiOutlineExclamationCircle color="red" size={20} />
+                    </Typography>
+                    <Typography sx={{ padding: "5px", color: "white" }}>
+                      There is no data found !
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+              {/* )} */}
+            </Card>
+          </>
+        )}
+      </div>
+    </>
   );
 };
 

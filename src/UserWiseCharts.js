@@ -33,17 +33,21 @@ import ExcelJS from "exceljs";
 import { toast } from "react-toastify";
 import { NavConfig } from "./Components/sideConfig";
 import logo from "./Assets/first_logo.png";
+import Loading from "./Components/Loading";
 
 const UserWiseCharts = () => {
   const [getLedger, setGetLedger] = useState([]);
   const [PortFoliotype, setPortFolioType] = useState("");
+  const [loading, setLoading] = useState(false);
   const chartsValues = async () => {
+    setLoading(true);
     try {
       const response = await instance.get(
         `/api/getUploadFilesLedger?fromDate= &toDate= `
       );
       if (response.status === 200) {
         setGetLedger(response.data);
+        setLoading(false);
       }
     } catch (e) {
       console.log(e);
@@ -149,11 +153,15 @@ const UserWiseCharts = () => {
   ];
   const handleDownloadCSV = () => {
     const csvData = exportTableHeading.map((row) => row).join("\n");
+    setLoading(true);
     const blob = new Blob([csvData], { type: "text/csv" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "data.csv";
     link.click();
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
     toast.success("Downloaded Successfully !", {
       position: toast.POSITION.BOTTOM_RIGHT,
       className: "foo-bar",
@@ -170,7 +178,7 @@ const UserWiseCharts = () => {
       base64: imgBase64,
       extension: "png",
     });
-
+    setLoading(true);
     worksheet.addImage(imageId, "A2:E8");
 
     exportTableHeading.forEach((row) => {
@@ -188,6 +196,9 @@ const UserWiseCharts = () => {
     a.href = url;
     a.download = "data.xlsx";
     a.click();
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
     toast.success("Downloaded Successfully !", {
       position: toast.POSITION.BOTTOM_RIGHT,
       className: "foo-bar",
@@ -206,7 +217,7 @@ const UserWiseCharts = () => {
     const doc = new jsPDF();
     // doc.text(10, 10, "Report");
     const imgData = logo;
-
+    setLoading(true);
     doc.addImage(imgData, "PNG", 13, 20, 150, 30);
     doc.autoTable({
       startY: 60,
@@ -214,6 +225,9 @@ const UserWiseCharts = () => {
       body: exportTableHeading.slice(1),
     });
     doc.save("data.pdf");
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
     toast.success("Downloaded Successfully !", {
       position: toast.POSITION.BOTTOM_RIGHT,
       className: "foo-bar",
@@ -239,114 +253,116 @@ const UserWiseCharts = () => {
   };
 
   return (
-    <div>
-      <Box sx={{ padding: "10px" }}>
-        <Typography
-          variant="h4"
-          sx={{ color: "white", textAlign: "center", fontWeight: "600" }}
-        >
-          UserWise
-        </Typography>
+    <>
+      {loading && <Loading />}
+      <div>
+        <Box sx={{ padding: "10px" }}>
+          <Typography
+            variant="h4"
+            sx={{ color: "white", textAlign: "center", fontWeight: "600" }}
+          >
+            UserWise
+          </Typography>
 
-        <Grid container spacing={2} p={2}>
-          <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-            <DropDown
-              arr={uniqueId}
-              label={"User Wise"}
-              value={PortFoliotype}
-              onChange={handleUserIdChange}
-            />
-          </Grid>
-          <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-            <DropDown
-              arr={date_Range}
-              label={"Date Range"}
-              value={dateRange}
-              onChange={(e) => {
-                setDateRange(e.target.value);
-                setExportData({
-                  ...exportData,
-                  exportDateRange: e.target.value,
-                });
-              }}
-            />
-          </Grid>
-          <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-            <br />
-            <Button
-              variant="contained"
-              sx={{ background: "white", color: "black", padding: "10px" }}
-              fullWidth
-              onClick={handleAddCount}
-            >
-              More
-            </Button>
-          </Grid>
-          {count >= 1 && (
-            <>
-              {" "}
-              <Grid xl={4} lg={4} md={4} sm={12} xs={12} p={1.2}>
-                <DatePickerComponent
-                  label={"From Date"}
-                  name={"From Date"}
-                  value={fromDate}
-                  onChange={(e) => {
-                    setFromDate(e.target.value);
-                    setExportData({
-                      ...exportData,
-                      exportFromDate: e.target.value,
-                    });
-                  }}
-                />
-              </Grid>
-              <Grid xl={4} lg={4} md={4} sm={12} xs={12} p={1.2}>
-                <DatePickerComponent
-                  label={"To Date"}
-                  name={"To Date"}
-                  value={toDate}
-                  onChange={(e) => {
-                    setToDate(e.target.value);
-                    setExportData({
-                      ...exportData,
-                      exportToDate: e.target.value,
-                    });
-                  }}
-                />
-              </Grid>
-              <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-                <DropDown
-                  arr={export_Type}
-                  label={"Export Type"}
-                  value={exportType}
-                  onChange={(e) => setExportType(e.target.value)}
-                />
-              </Grid>
-              {exportType.length > 0 && (
-                <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-                  <br />
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    sx={{ padding: "10px" }}
-                    onClick={typeOfDownloads}
-                  >
-                    Export
-                  </Button>
+          <Grid container spacing={2} p={2}>
+            <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
+              <DropDown
+                arr={uniqueId}
+                label={"User Wise"}
+                value={PortFoliotype}
+                onChange={handleUserIdChange}
+              />
+            </Grid>
+            <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
+              <DropDown
+                arr={date_Range}
+                label={"Date Range"}
+                value={dateRange}
+                onChange={(e) => {
+                  setDateRange(e.target.value);
+                  setExportData({
+                    ...exportData,
+                    exportDateRange: e.target.value,
+                  });
+                }}
+              />
+            </Grid>
+            <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
+              <br />
+              <Button
+                variant="contained"
+                sx={{ background: "white", color: "black", padding: "10px" }}
+                fullWidth
+                onClick={handleAddCount}
+              >
+                More
+              </Button>
+            </Grid>
+            {count >= 1 && (
+              <>
+                {" "}
+                <Grid xl={4} lg={4} md={4} sm={12} xs={12} p={1.2}>
+                  <DatePickerComponent
+                    label={"From Date"}
+                    name={"From Date"}
+                    value={fromDate}
+                    onChange={(e) => {
+                      setFromDate(e.target.value);
+                      setExportData({
+                        ...exportData,
+                        exportFromDate: e.target.value,
+                      });
+                    }}
+                  />
                 </Grid>
-              )}
-            </>
-          )}
-        </Grid>
-      </Box>
-      <br />
+                <Grid xl={4} lg={4} md={4} sm={12} xs={12} p={1.2}>
+                  <DatePickerComponent
+                    label={"To Date"}
+                    name={"To Date"}
+                    value={toDate}
+                    onChange={(e) => {
+                      setToDate(e.target.value);
+                      setExportData({
+                        ...exportData,
+                        exportToDate: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
+                  <DropDown
+                    arr={export_Type}
+                    label={"Export Type"}
+                    value={exportType}
+                    onChange={(e) => setExportType(e.target.value)}
+                  />
+                </Grid>
+                {exportType.length > 0 && (
+                  <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
+                    <br />
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      sx={{ padding: "10px" }}
+                      onClick={typeOfDownloads}
+                    >
+                      Export
+                    </Button>
+                  </Grid>
+                )}
+              </>
+            )}
+          </Grid>
+        </Box>
+        <br />
 
-      {/* <Charts
+        {/* <Charts
         data1={filterUserIdAvgValues}
         downData1={uniqueId}
         userWise
         data2={userIdWiseFilter}
       /> */}
-      {/* <div
+        {/* <div
         style={{
           position: "absolute",
           left: "20%",
@@ -384,15 +400,16 @@ const UserWiseCharts = () => {
           </tbody>
         </table>
       </div> */}
-      {PortFoliotype && dateRange && (
-        <Charts
-          data1={result}
-          downData1={uniquieUserId}
-          userWise
-          data2={userIdWiseFilter}
-        />
-      )}
-    </div>
+        {PortFoliotype && dateRange && (
+          <Charts
+            data1={result}
+            downData1={uniquieUserId}
+            userWise
+            data2={userIdWiseFilter}
+          />
+        )}
+      </div>
+    </>
   );
 };
 

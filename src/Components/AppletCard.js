@@ -22,12 +22,20 @@ const AppletCard = ({ one, two, three, title, value }) => {
     <div style={{ padding: "15px" }}>
       <Card sx={appletColor}>
         <Box sx={{ padding: "8px" }}>
-          <Typography variant="h5" sx={{ fontWeight: "500", color: "white" }}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "500", color: "white", float: "left" }}
+          >
             {title}
           </Typography>
           <Typography
             variant="h4"
-            sx={{ fontWeight: "600", padding: "8px", color: "white" }}
+            sx={{
+              fontWeight: "600",
+              padding: "15px",
+              color: "white",
+              float: "left",
+            }}
           >
             {value}
           </Typography>

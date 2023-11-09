@@ -22,12 +22,12 @@ import { Popover } from "@mui/material";
 import Cookies from "universal-cookie";
 
 const SideBar = () => {
-  const cookies =new Cookies();
+  const cookies = new Cookies();
   const drawerWidth = 340;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [openSubMenu, setOpenSubMenu] = React.useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
- const [userName,setUserName]=useState([]);
+  const [popName, setPopName] = useState([]);
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -37,12 +37,12 @@ const SideBar = () => {
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? 'avatar-popover' : undefined;
+  const id = open ? "avatar-popover" : undefined;
   const navigate = useNavigate();
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  const handleNav = (nav,index) => {
+  const handleNav = (nav, index) => {
     if (NavConfig[index]?.subItems) {
       setOpenSubMenu(openSubMenu === index ? null : index); // Toggle submenu visibility
     } else {
@@ -50,9 +50,11 @@ const SideBar = () => {
     }
   };
   useEffect(() => {
-    const userName = cookies.get('name');
-    setUserName(userName);
+    const userName = cookies.get("User");
+    const retriveData = Object.values(userName?.data[0]);
+    setPopName(retriveData);
   }, []);
+  // console.log(userName[0].userName);
   const drawer = (
     <div>
       <Toolbar />
@@ -62,9 +64,7 @@ const SideBar = () => {
           <div key={text.name}>
             <ListItem disablePadding>
               <ListItemButton onClick={() => handleNav(text.path, index)}>
-                <ListItemIcon sx={{ color: "white" }}>
-                  {text.icon}
-                </ListItemIcon>
+                <ListItemIcon sx={{ color: "white" }}>{text.icon}</ListItemIcon>
                 <ListItemText primary={text.name} />
               </ListItemButton>
             </ListItem>
@@ -91,62 +91,81 @@ const SideBar = () => {
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-          <AppBar
-             position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          background: "#25242D",
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "8px"
+        <AppBar
+          position="fixed"
+          sx={{
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            ml: { sm: `${drawerWidth}px` },
+            background: "#25242D",
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "8px",
+          }}
+        >
+          <Toolbar
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
-    >
-    <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-       <div style={{ display: 'flex', alignItems: 'center' }}>
-       <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={handleDrawerToggle}
-          sx={{ mr: 2, display: { sm: "none" } }}
-       >
-        <MenuIcon />
-      </IconButton>
-       <Typography variant="h6" noWrap component="div" sx={{ fontWeight: "600" }}>
-           Black Box
-      </Typography>
-    </div>
-      <Avatar
-         alt="Remy Sharp"
-         src="/static/images/avatar/1.jpg"
-         sx={{ width: 56, height: 56 }}
-         aria-describedby={id}
-         onClick={handleAvatarClick}
-      />
-       <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handlePopoverClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      >
-         <Box sx={{ p: 4 }}>
-          <Typography variant="body1"> {userName}</Typography>
-          <Typography variant="body1">Your Name</Typography>
-          <Typography variant="body2" >Logout</Typography>
-        </Box>
-      </Popover>
-      </Toolbar>
-   </AppBar>
-   <Box
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2, display: { sm: "none" } }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography
+                variant="h6"
+                noWrap
+                component="div"
+                sx={{ fontWeight: "600" }}
+              >
+                Black Box
+              </Typography>
+            </div>
+            <Avatar
+              alt="Remy Sharp"
+              src="/static/images/avatar/1.jpg"
+              sx={{ width: 56, height: 56 }}
+              aria-describedby={id}
+              onClick={handleAvatarClick}
+            />
+            <Popover
+              id={id}
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handlePopoverClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <Box sx={{ p: 4 }}>
+                <Typography variant="body1"> {popName[0]?.userName}</Typography>
+                {/* <Typography variant="body1">Your Name</Typography> */}
+                <Typography
+                  variant="body2"
+                  onClick={() => {
+                    cookies.remove("User");
+                    navigate("/");
+                  }}
+                >
+                  Logout
+                </Typography>
+              </Box>
+            </Popover>
+          </Toolbar>
+        </AppBar>
+        <Box
           component="nav"
           sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
           aria-label="mailbox folders"
