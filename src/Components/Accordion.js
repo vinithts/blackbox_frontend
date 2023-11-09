@@ -243,9 +243,17 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
     return fieldsToSearch.some((field) =>
       String(data[field])
         .toLowerCase()
-        .includes(UserIDtype.toLowerCase() || PortFoliotype.toLowerCase())
+        .includes(PortFoliotype.toLowerCase() || UserIDtype.toLowerCase())
     );
   };
+  // const filterDatasValue = (data) => {
+  //   const fieldsToSearch = ["Portfolio_Name", "User_ID"];
+  //   return fieldsToSearch.some(
+  //     (field) =>
+  //       String(data[field]).toLowerCase().includes(UserIDtype.toLowerCase()) ||
+  //       String(data[field]).toLowerCase().includes(PortFoliotype.toLowerCase())
+  //   );
+  // };
 
   const filteredData = data?.filter((filData) => filterDatasValue(filData));
 
@@ -281,24 +289,22 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
   // const [sell, setSell] = useState(0);
 
   // const [buy, setBuy] = useState(0);
-  let profit = 0;
-  let loss = 0;
+
   const sellValue = useMemo(() => {
-    return filteredData
-      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-      .reduce((acc, value) => {
-        if (value["Txn"] === "SELL") {
+    return (
+      filteredData
+        // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        .reduce((acc, value) => {
+          // if (value["Txn"] === "SELL") {
+          // console.log(acc);
           acc += Number(value["Avg_Price"]);
-        } else {
-          acc -= Number(value["Avg_Price"]);
-        }
-        // if (acc > 0) {
-        //   profit += acc;
-        // } else {
-        //   loss -= acc;
-        // }
-        return acc;
-      }, 0);
+          // } else {
+          // acc -= Number(value["Avg_Price"]);
+          // }
+
+          return acc;
+        }, 0)
+    );
   }, [filteredData, page, rowsPerPage]);
 
   // console.log("profit :", profit, "loss :", loss);

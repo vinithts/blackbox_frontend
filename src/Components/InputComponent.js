@@ -7,6 +7,8 @@ const InputComponent = ({ label, value, onChange, type, name, textArea }) => {
         style={{
           color: "gray",
           fontWeight: "600",
+          display: "flex",
+          alignItems: "end",
         }}
       >
         {label}
