@@ -72,9 +72,32 @@ const UserWiseCharts = () => {
       return data.Avg_Price;
     }
   });
+
+  // --------
+
+  const selectedUserIdAva_Price = (data) => {
+    const obj = {};
+    for (const char of data) {
+      if (char.User_ID === PortFoliotype) {
+        // console.log("222222222222222222222", char.Avg_Price);
+        if (!obj[char.User_ID]) {
+          obj[char.User_ID] = 0;
+        }
+        obj[char.User_ID] += parseFloat(char.Avg_Price);
+      }
+    }
+    const key = Object.keys(obj);
+    const value = Object.values(obj);
+    return [key, value];
+  };
+  const result = selectedUserIdAva_Price(getLedger);
+  console.log(result[1]);
+  // --------
   const [value, setValue] = useState([]);
+
   const handleUserIdChange = (e) => {
     const data = e.target.value;
+    // selectedUserIdAva_Price(getLedger);
     setPortFolioType(e.target.value);
     console.log(typeof data);
     const result = getLedger
@@ -363,7 +386,7 @@ const UserWiseCharts = () => {
       </div> */}
       {PortFoliotype && dateRange && (
         <Charts
-          data1={filterUserIdAvgValues}
+          data1={result}
           downData1={uniquieUserId}
           userWise
           data2={userIdWiseFilter}

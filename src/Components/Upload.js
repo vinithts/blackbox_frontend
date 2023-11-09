@@ -26,6 +26,9 @@ const Upload = () => {
     "User Alias",
     "Remarks",
     "Tag",
+    "B/S MTM",
+    "NETP&L",
+    "TAG",
   ];
   const handleFileChange = async (e) => {
     const file = e.target.files[0];

@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const ViewCustomerDetails = () => {
-  return (
-    <div>
-      ViewCustomerDetails
-    </div>
-  )
-}
+  return <div>ViewCustomerDetails</div>;
+};
 
-export default ViewCustomerDetails
+export default ViewCustomerDetails;

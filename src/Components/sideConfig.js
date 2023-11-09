@@ -30,7 +30,7 @@ export const NavConfig = [
       },
       {
         name: "View Customer",
-        path: "/Dashboard/viewcustomer",
+        path: "/Dashboard/viewcustomerDetails",
         icon: <Streetview color="white" />,
       },
     ],

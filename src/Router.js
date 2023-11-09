@@ -35,8 +35,8 @@ const Router = () => {
         { path: "/Dashboard", element: <DashBoard /> },
         { path: "userWiseChart", element: <UserWiseCharts /> },
         { path: "upload", element: <Upload /> },
-        { path: "addcustomernew", element:<AddCustomerNew/>},
-        { path: "viewcustomer", element:<ViewCustomerDetails/>},
+        { path: "addcustomernew", element: <AddCustomerNew /> },
+        { path: "viewcustomerDetails", element: <ViewCustomerDetails /> },
         // { path: "report", element:<Report/>}
       ],
     },
