@@ -4,7 +4,7 @@ import SideBar from "./SideBar";
 const DashboardPage = () => {
   return (
     <div>
-      <SideBar />
+      <SideBar/>
     </div>
   );
 };

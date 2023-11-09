@@ -13,16 +13,31 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React ,{useState,useEffect} from "react";
 import { NavConfig } from "./sideConfig";
 import { Outlet, useNavigate } from "react-router-dom";
-
+import Avatar from '@mui/material/Avatar';
 import MenuIcon from "@mui/icons-material/Menu";
+import { Popover } from "@mui/material";
+import Cookies from "universal-cookie";
 
 const SideBar = () => {
+  const cookies =new Cookies();
   const drawerWidth = 340;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [openSubMenu, setOpenSubMenu] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+ const [userName,setUserName]=useState([]);
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'avatar-popover' : undefined;
   const navigate = useNavigate();
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -34,6 +49,10 @@ const SideBar = () => {
       navigate(nav);
     }
   };
+  useEffect(() => {
+    const userName = cookies.get('name');
+    setUserName(userName);
+  }, []);
   const drawer = (
     <div>
       <Toolbar />
@@ -72,37 +91,62 @@ const SideBar = () => {
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBar
-          position="fixed"
-          sx={{
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
-            ml: { sm: `${drawerWidth}px` },
-            background: "#25242D",
-          }}
-        >
-          {" "}
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{ fontWeight: "600" }}
-            >
-              Black Box
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
-        <Box
+          <AppBar
+             position="fixed"
+        sx={{
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+          background: "#25242D",
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "8px"
+            }}
+    >
+    <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+       <div style={{ display: 'flex', alignItems: 'center' }}>
+       <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{ mr: 2, display: { sm: "none" } }}
+       >
+        <MenuIcon />
+      </IconButton>
+       <Typography variant="h6" noWrap component="div" sx={{ fontWeight: "600" }}>
+           Black Box
+      </Typography>
+    </div>
+      <Avatar
+         alt="Remy Sharp"
+         src="/static/images/avatar/1.jpg"
+         sx={{ width: 56, height: 56 }}
+         aria-describedby={id}
+         onClick={handleAvatarClick}
+      />
+       <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+         <Box sx={{ p: 4 }}>
+          <Typography variant="body1"> {userName}</Typography>
+          <Typography variant="body1">Your Name</Typography>
+          <Typography variant="body2" >Logout</Typography>
+        </Box>
+      </Popover>
+      </Toolbar>
+   </AppBar>
+   <Box
           component="nav"
           sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
           aria-label="mailbox folders"
