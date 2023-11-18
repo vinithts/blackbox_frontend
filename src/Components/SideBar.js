@@ -13,17 +13,19 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React ,{useState,useEffect} from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { NavConfig } from "./sideConfig";
 import { Outlet, useNavigate } from "react-router-dom";
-import Avatar from '@mui/material/Avatar';
+import Avatar from "@mui/material/Avatar";
 import MenuIcon from "@mui/icons-material/Menu";
+import Button from '@mui/material/Button';
 import { Popover } from "@mui/material";
 import Cookies from "universal-cookie";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const SideBar = () => {
-  const cookies = new Cookies();
-  const drawerWidth = 340;
+  // const cookies = new Cookies();
+  const drawerWidth = 300;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [openSubMenu, setOpenSubMenu] = React.useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -49,12 +51,12 @@ const SideBar = () => {
       navigate(nav);
     }
   };
+  const cookies = useMemo(() => new Cookies(), []);
   useEffect(() => {
     const userName = cookies.get("User");
     const retriveData = Object.values(userName?.data[0]);
     setPopName(retriveData);
-  }, []);
-  // console.log(userName[0].userName);
+  }, [cookies]);
   const drawer = (
     <div>
       <Toolbar />
@@ -129,12 +131,13 @@ const SideBar = () => {
               </Typography>
             </div>
             <Avatar
-              alt="Remy Sharp"
-              src="/static/images/avatar/1.jpg"
               sx={{ width: 56, height: 56 }}
               aria-describedby={id}
               onClick={handleAvatarClick}
-            />
+            >
+              {" "}
+              {popName[0]?.userName.charAt(0).toUpperCase()}
+            </Avatar>
             <Popover
               id={id}
               open={open}
@@ -149,17 +152,20 @@ const SideBar = () => {
                 horizontal: "right",
               }}
             >
-              <Box sx={{ p: 4 }}>
+              <Box component="section" sx={{ p: 2, border: "ActiveBorder" }}>
                 <Typography variant="body1"> {popName[0]?.userName}</Typography>
-                {/* <Typography variant="body1">Your Name</Typography> */}
+              </Box>
+              <Divider sx={{color:"black"}}/>
+              <Box component="section" sx={{ p: 1, border: "ActiveBorder" }}>
                 <Typography
-                  variant="body2"
+                  sx={{ textAlign: "center", fontSize: "18px" }}
                   onClick={() => {
                     cookies.remove("User");
                     navigate("/");
                   }}
-                >
-                  Logout
+                >  <Button>Logout{" "}&nbsp;&nbsp;&nbsp;&nbsp;
+                <LogoutIcon sx={{ color: "black", fontSize: "18px" }} /></Button>
+                  
                 </Typography>
               </Box>
             </Popover>

@@ -1,40 +1,15 @@
 import React, { useState } from "react";
 import background from "../Assets/loginBackground.jpg";
-import { Box, Button, Grid, Typography } from "@mui/material";
-import InputComponent from "../Components/InputComponent";
+import { Box, Button, Grid, Typography,Container,TextField } from "@mui/material";
 import { instance } from "../Api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Cookies from "universal-cookie";
+import Loading from "../Components/Loading";
 
 const Login = () => {
+  const [isLoading,setIsLoading]=useState(false);
   const cookies=new Cookies();
-  const cardStyle = {
-    width: "35%",
-    height: "40vh",
-    background: "#25242D",
-    borderRadius: "10px",
-    position: "absolute",
-    top: "30%",
-    left: "30%",
-    transform: "translate(-50% -50%)",
-    "@media (max-width: 768px)": {
-      width: "95%",
-      height: "63vh",
-      position: "absolute",
-      top: "30%",
-      left: "2%",
-      transform: "none",
-    },
-    "@media (max-width: 480px)": {
-      width: "95%",
-      height: "63vh",
-      position: "absolute",
-      top: "30%",
-      left: "2%",
-      transform: "none",
-    },
-  };
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -47,6 +22,7 @@ const Login = () => {
   const navigate = useNavigate();
   const loginUser = async () => {
     try {
+      setIsLoading(true);
       const response = await instance.get(
         `/api/login?userName=${loginData.email}&password=${loginData.password}`
       );
@@ -64,6 +40,8 @@ const Login = () => {
         position: toast.POSITION.BOTTOM_RIGHT,
         className: "foo-bar",
       });
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -90,53 +68,78 @@ const Login = () => {
             height: "100%",
           }}
         >
-          <Box sx={cardStyle}>
-            <Typography
-              sx={{ color: "white", textAlign: "center", padding: "10px" }}
-              variant="h5"
-            >
-              Login
-            </Typography>
-            <Grid container spacing={2} p={2}>
-              <Grid item xl={12} lg={12} md={12} sx={12} sm={12}>
-                <InputComponent
-                  name={"email"}
-                  label={"Email"}
-                  value={loginData.email}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xl={12} lg={12} md={12} sx={12} sm={12}>
-                <InputComponent
-                  label={"Password"}
-                  name={"password"}
-                  value={loginData.password}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid
-                item
-                xl={12}
-                lg={12}
-                md={12}
-                xs={12}
-                sm={12}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Button
-                  variant="contained"
-                  sx={{ margin: "auto 0" }}
-                  onClick={loginUser}
-                >
-                  Login
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
+      <Container component="main" maxWidth="sm" sx={{mt:"8rem"}}>
+      {isLoading && <Loading />}
+      <Box
+        sx={{
+          boxShadow: 3,
+          borderRadius: 2,
+          px: 4,
+          py: 6,
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          background: "#25242D"
+        }}
+      >
+        <Typography component="h1" variant="h5" sx={{color:"white",fontWeight:"bold"}}>
+          LOG IN
+        </Typography>
+        <Box component="form"  noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            value={loginData.email}
+            onChange={handleChange}
+            InputProps={{
+              style: {
+                borderColor: 'white',
+                backgroundColor: '#9999bb',
+              },
+            }}
+            InputLabelProps={{
+              style: {
+                color: 'white',
+              },
+            }}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            value={loginData.password}
+            onChange={handleChange}
+            InputProps={{
+              style: {
+                borderColor: 'white',
+                backgroundColor: '#9999bb',
+              },
+            }}
+            InputLabelProps={{
+              style: {
+                color: 'white', 
+              },
+            }}
+          />
+           <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2,backgroundColor:"green" }}
+            onClick={loginUser}
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
+          </Button>
+        </Box>
+      </Box>
+    </Container>
         </div>
       </div>
     </>

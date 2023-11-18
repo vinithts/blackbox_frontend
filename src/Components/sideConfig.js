@@ -41,7 +41,7 @@ export const NavConfig = [
   //   icon: <Report color="white" />,
   // },
   {
-    name: "Setting",
+    name: "Settings",
     path: "/Dashboard",
     icon: <Settings color="white" />,
     subItems: [

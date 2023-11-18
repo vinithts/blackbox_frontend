@@ -1,32 +1,14 @@
 import React, { useState } from "react";
-import NavBar from "../Components/NavBar";
 import DashboardApplet from "./DashboardApplet";
-// import AddCustomer from "./AddCustomer";
 import Trade from "./Trade";
 import { ToastContainer } from "react-bootstrap";
 import Charts from "../Components/Charts";
 import { instance } from "../Api";
 
 // ------------
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import MailIcon from "@mui/icons-material/Mail";
-import MenuIcon from "@mui/icons-material/Menu";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import { Outlet, useNavigate } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { NavConfig } from "../Components/sideConfig";
 
 const DashBoard = () => {
   // const date = new Date();
@@ -216,7 +198,9 @@ const DashBoard = () => {
 
         <br />
         <Trade />
+        {getLedger.length>0 ?(
         <Charts data1={filterUserIdAvgValues} downData1={result} />
+        ):null}
         <ToastContainer />
       </div>
     </>

@@ -18,8 +18,10 @@ const DashboardApplet = () => {
         const port = response.data?.map((e) => e.Portfolio_Name);
 
         setPortfolioDetails(port.length);
-        const user = response.data?.map((e) => e.User_ID);
-        setUserId(user.length);
+        // const user = response.data?.map((e) => e.User_ID);
+        // setUserId(user.length);
+        const uniqueUserIds = [...new Set(response.data.map((e) => e.User_ID))];
+        setUserId(uniqueUserIds.length);
       }
     } catch (e) {
       console.log(e);
@@ -29,17 +31,6 @@ const DashboardApplet = () => {
       });
     }
   };
-  // const customerDetails = async () => {
-  //   try {
-  //     const response = await instance.get(`/getCustomersDetails`);
-  //     if (response.status === 200) {
-  //       const result = response.data.map((e) => e.amt);
-  //       setCusDetails(result);
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
   useEffect((e) => {
     TotalPortfolioDetails();
     getCustomersDetails().then((res) => {

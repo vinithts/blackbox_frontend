@@ -2,7 +2,6 @@ import {
   Box,
   Card,
   Grid,
-  InputAdornment,
   Paper,
   Table,
   TableBody,
@@ -11,21 +10,16 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
-import { Accordion, Form } from "react-bootstrap";
-import { AiOutlineExclamationCircle } from "react-icons/ai";
 import * as XLSX from "xlsx";
-import InputComponent from "./InputComponent";
 import { instance } from "../Api";
 import DatePickerComponent from "./DatePickerComponent";
-import { format } from "date-fns";
 import DropDown from "./DropDown";
-import { AccessAlarmTwoTone } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import Loading from "./Loading";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 export async function getCustomersDetails() {
   try {
@@ -40,15 +34,12 @@ export async function getCustomersDetails() {
     });
   }
 }
-const AccordionComponent = ({ title, trade, viewCus }) => {
+const AccordionComponent = ({ title, trade }) => {
   const [data, setData] = useState([]);
   const [keys, setKeys] = useState([]);
-  const [sim, setSim] = useState([]);
-
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [PortFoliotype, setPortFolioType] = useState("");
-  const [orderType, setOrderType] = useState("");
   const [UserIDtype, setUserIDType] = useState("");
   const [loading, setLoading] = useState(false);
   // console.log(type);
@@ -87,14 +78,11 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
     return new Date(year, month, day, hours, minutes, seconds);
   }
 
-  const [totalValues, setTotalValues] = useState(0);
-
   const handleToDate = (e) => {
     setToDate(e.target.value);
   };
 
   const [Portfolio, setPortfolio] = useState([]);
-  const [orderId, setOrderId] = useState([]);
   const [userId, setUserId] = useState([]);
 
   let user = [];
@@ -246,15 +234,6 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
         .includes(PortFoliotype.toLowerCase() || UserIDtype.toLowerCase())
     );
   };
-  // const filterDatasValue = (data) => {
-  //   const fieldsToSearch = ["Portfolio_Name", "User_ID"];
-  //   return fieldsToSearch.some(
-  //     (field) =>
-  //       String(data[field]).toLowerCase().includes(UserIDtype.toLowerCase()) ||
-  //       String(data[field]).toLowerCase().includes(PortFoliotype.toLowerCase())
-  //   );
-  // };
-
   const filteredData = data?.filter((filData) => filterDatasValue(filData));
 
   const [page, setPage] = React.useState(0);
@@ -286,22 +265,17 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
         console.log(e);
       });
   }, []);
-  // const [sell, setSell] = useState(0);
-
-  // const [buy, setBuy] = useState(0);
 
   const sellValue = useMemo(() => {
     return (
       filteredData
         // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .reduce((acc, value) => {
-          // if (value["Txn"] === "SELL") {
-          // console.log(acc);
-          acc += Number(value["Avg_Price"]);
-          // } else {
-          // acc -= Number(value["Avg_Price"]);
-          // }
-
+          if (value["Txn"] === "BUY") {
+            acc += Number(value["Avg_Price"]) * -Number(value["Qty"]);
+          } else {
+            acc += Number(value["Avg_Price"]) * Number(value["Qty"]);
+          }
           return acc;
         }, 0)
     );
@@ -372,7 +346,6 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                             align={"center"}
                             style={{
                               minWidth: 170,
-
                               background: "#25242D",
                               color: "white",
                               fontWeight: "600",
@@ -455,6 +428,18 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                 /> */}
                 </Grid>
                 <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
+                  <DropDown
+                    arrays={userId}
+                    other
+                    label={"User_ID"}
+                    values={UserIDtype}
+                    onChanges={(e) => {
+                      setUserIDType(e.target.value);
+                      setPortFolioType("");
+                    }}
+                  />
+                </Grid>
+                <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
                   {/* <InputComponent
                   label={"Search"}
                   value={filterValue}
@@ -471,15 +456,6 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                     }}
                   />
                 </Grid>
-                <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
-                  <DropDown
-                    arrays={userId}
-                    other
-                    label={"User_ID"}
-                    values={UserIDtype}
-                    onChanges={(e) => setUserIDType(e.target.value)}
-                  />
-                </Grid>
 
                 {/* <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
                 <InputComponent
@@ -492,7 +468,12 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
               </Grid>
               {/* {UserIDtype && PortFoliotype && ( */}
               <Box sx={{ padding: "15px" }}>
-                {data.length > 0 ? (
+                {!loading && data.length === 0 ? (
+                  <Typography sx={{ color: "white", padding: "6rem" }}>
+                    <ErrorOutlineIcon sx={{ color: "red" }} /> Need to Upload
+                    file in settings!
+                  </Typography>
+                ) : (
                   <Paper
                     sx={{ overflow: "hidden", border: "1px solid #D9D9D9" }}
                   >
@@ -567,7 +548,8 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                       <Typography
                         sx={{ paddingRight: "10rem", color: "#90EE90" }}
                       >
-                        {`Total Profit :  ${Math.round(sellValue)}`}
+                        {/* {`Total Profit :  ${Math.round(sellValue)}`} */}
+                        Total Profit: {sellValue.toFixed(2)}
                         &nbsp;
                       </Typography>
                       {/* <Typography
@@ -575,21 +557,6 @@ const AccordionComponent = ({ title, trade, viewCus }) => {
                         >{`Total Loss : -${Math.round(loss)}`}</Typography> */}
                     </div>
                   </Paper>
-                ) : (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      padding: "5px",
-                    }}
-                  >
-                    <Typography>
-                      <AiOutlineExclamationCircle color="red" size={20} />
-                    </Typography>
-                    <Typography sx={{ padding: "5px", color: "white" }}>
-                      There is no data found !
-                    </Typography>
-                  </Box>
                 )}
               </Box>
               {/* )} */}
