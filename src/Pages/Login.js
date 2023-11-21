@@ -5,7 +5,6 @@ import { instance } from "../Api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Cookies from "universal-cookie";
-import Loading from "../Components/Loading";
 
 const Login = () => {
   const [isLoading,setIsLoading]=useState(false);
@@ -69,7 +68,7 @@ const Login = () => {
           }}
         >
       <Container component="main" maxWidth="sm" sx={{mt:"8rem"}}>
-      {isLoading && <Loading />}
+      {/* {isLoading && <Loading />} */}
       <Box
         sx={{
           boxShadow: 3,

@@ -39,10 +39,10 @@ const AccordionComponent = ({ title, trade }) => {
   const [keys, setKeys] = useState([]);
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
-  const [PortFoliotype, setPortFolioType] = useState("");
-  const [UserIDtype, setUserIDType] = useState("");
   const [loading, setLoading] = useState(false);
-  // console.log(type);
+  const [UserIDtype, setUserIDType] = useState("");
+  const [tagType, setTagType] = useState("");
+  const [PortFoliotype, setPortFolioType] = useState("");
 
   function parseCustomDate(dateStr) {
     const dateComponents = dateStr.match(
@@ -77,35 +77,42 @@ const AccordionComponent = ({ title, trade }) => {
 
     return new Date(year, month, day, hours, minutes, seconds);
   }
-
   const handleToDate = (e) => {
     setToDate(e.target.value);
+  };
+  const handleChange = (e) => {
+    getPortifolioTag(e.target.value);
+    setTagType(e.target.value);
+    setUserIDType("");
   };
 
   const [Portfolio, setPortfolio] = useState([]);
   const [userId, setUserId] = useState([]);
+  const [tags, setTags] = useState([]);
 
   let user = [];
   let Portfolio_Name = [];
   const dropDownData = (val) => {
-    const result = val
-      // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-      .map((e) => {
-        if (e.User_ID || e.Portfolio_Name) {
-          user.push(e.User_ID);
-          Portfolio_Name.push(e.Portfolio_Name);
+    const result = val.map((e) => {
+      if (e.User_ID || e.Portfolio_Name) {
+        user.push(e.User_ID);
+        Portfolio_Name.push(e.Portfolio_Name);
+        if (e.Tag) {
+          tags.push(e.Tag);
         }
-      });
-    const removeDuplicatePortfolio = new Set(Portfolio_Name);
-    const updatePortfolio = [...removeDuplicatePortfolio];
+      }
+    });
+    // const removeDuplicatePortfolio = new Set(Portfolio_Name);
+    // const updatePortfolio = [...removeDuplicatePortfolio];
     const removeDuplicateUserId = new Set(user);
     const updateUserId = [...removeDuplicateUserId];
-    console.log(updatePortfolio);
-    setPortfolio(updatePortfolio);
-    setUserId(updateUserId);
+    const removeDuplicateTags = new Set(tags);
+    const updateTags = [...removeDuplicateTags];
+    // setPortfolio(["All", ...updatePortfolio]);
+    setUserId(["All", ...updateUserId]);
+    setTags(["All", ...updateTags]);
     return result;
   };
-  // console.log(Portfolio);
   const getUploadFilesLedger = async () => {
     setLoading(true);
     try {
@@ -118,18 +125,6 @@ const AccordionComponent = ({ title, trade }) => {
         setData(response.data);
         dropDownData(response.data);
         setLoading(false);
-        // dropDownData(response.data);
-        // let BUY = 0;
-        // let SELL = 0;
-        // response.data.map((e) => {
-        //   if (e.Txn === "BUY") {
-        //     BUY += e.Avg_Price;
-        //     console.log("true");
-        //   } else if (e.Txn === "SELL") {
-        //     SELL += e.Avg_Price;
-        //   }
-        //   setTotalValues(SELL - BUY);
-        // });
       }
     } catch (e) {
       console.log(e);
@@ -139,7 +134,6 @@ const AccordionComponent = ({ title, trade }) => {
       });
     }
   };
-  // console.log(totalValues);
 
   const columnNames = [
     "Portfolio Name",
@@ -163,7 +157,6 @@ const AccordionComponent = ({ title, trade }) => {
     "Remarks",
     "Tag",
   ];
-  // console.log(columnNames.length);
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -186,7 +179,6 @@ const AccordionComponent = ({ title, trade }) => {
       for (const obj of jsonData) {
         ensureMandatoryKeys(obj);
       }
-      // console.log(jsonData);
 
       try {
         const response = await instance.post(`/api/uploadFilesLedger`, {
@@ -199,8 +191,6 @@ const AccordionComponent = ({ title, trade }) => {
             className: "foo-bar",
           });
         }
-
-        // console.log(response);
       } catch (e) {
         console.log(e);
         toast.error("Something went to wrong !", {
@@ -219,8 +209,6 @@ const AccordionComponent = ({ title, trade }) => {
       setKeys(Object.keys(data[0]));
     }
   }, [data]);
-  // console.log(data);
-  // const [filterValue, setFilterValue] = useState("");
 
   const handleFromDate = (e) => {
     setFromDate(e.target.value);
@@ -228,12 +216,24 @@ const AccordionComponent = ({ title, trade }) => {
 
   const filterDatasValue = (data) => {
     const fieldsToSearch = ["Portfolio_Name", "User_ID"];
-    return fieldsToSearch.some((field) =>
-      String(data[field])
-        .toLowerCase()
-        .includes(PortFoliotype.toLowerCase() || UserIDtype.toLowerCase())
-    );
+    if (UserIDtype === "All" || tagType === "All") {
+      if (PortFoliotype.length > 0) {
+        return fieldsToSearch?.some((field) =>
+          String(data[field])
+            ?.toLowerCase()
+            ?.includes(PortFoliotype?.toLowerCase() || UserIDtype.toLowerCase())
+        );
+      }
+      return data;
+    } else {
+      return fieldsToSearch?.some((field) =>
+        String(data[field])
+          ?.toLowerCase()
+          ?.includes(PortFoliotype?.toLowerCase() || UserIDtype.toLowerCase())
+      );
+    }
   };
+
   const filteredData = data?.filter((filData) => filterDatasValue(filData));
 
   const [page, setPage] = React.useState(0);
@@ -258,13 +258,29 @@ const AccordionComponent = ({ title, trade }) => {
           setCusDetails(res.data);
           setCusKey(Object.keys(res.data[0]));
           setLoading(false);
-          // console.log("datas", res.data);
         }
       })
       .catch((e) => {
         console.log(e);
       });
   }, []);
+  const getPortifolioTag = async (e) => {
+    try {
+      const response = await instance.get(`/api/protfolioName/${e}`);
+      if (response.status === 200) {
+        const array = response.data.map((a) => a.Portfolio_Name);
+        const uniquePortfolios = new Set(array);
+        const uniquePortfolioArray = [...uniquePortfolios];
+        setPortfolio(uniquePortfolioArray);
+      }
+    } catch (e) {
+      console.log(e);
+      toast.error("Something went to wrong !", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
+    }
+  };
 
   const sellValue = useMemo(() => {
     return (
@@ -280,39 +296,12 @@ const AccordionComponent = ({ title, trade }) => {
         }, 0)
     );
   }, [filteredData, page, rowsPerPage]);
-
-  // console.log("profit :", profit, "loss :", loss);
-  // const d = () => {
-  //   const arr = filteredData.slice(
-  //     page * rowsPerPage,
-  //     page * rowsPerPage + rowsPerPage
-  //   );
-
-  //   let a = 0,
-  //     b = 0;
-  //   for (let i = 0; i < arr.length; i++) {
-  //     if (arr[i]["Txn"] === "SELL") {
-  //       a += +arr[i]["Avg_Price"];
-  //     } else {
-  //       b += +arr[i]["Avg_Price"];
-  //     }
-  //   }
-  //   console.log(a, b);
-  //   console.log(b - a);
-  // };
   useEffect(() => {
-    // if (fromDate && toDate) {
     getUploadFilesLedger();
-    // }
     dropDownData(filteredData);
   }, [fromDate, toDate, page || rowsPerPage]);
-  // useEffect(() => {
 
-  // }, [page, rowsPerPage]);
-
-  // console.log(userId);
   const arr = ["Portfolio_Name", "Order_ID", "User_ID"];
-
   return (
     <>
       {loading && <Loading />}
@@ -381,8 +370,6 @@ const AccordionComponent = ({ title, trade }) => {
                   rowsPerPage={10}
                   page={10}
                   sx={{ background: "#25242D", color: "white" }}
-                  // onPageChange={handleChangePage}
-                  // onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Paper>
             </Card>
@@ -393,18 +380,6 @@ const AccordionComponent = ({ title, trade }) => {
               sx={{ padding: "15px", width: "100%", background: "#25242D" }}
             >
               <Grid container spacing={2} p={2}>
-                {/* <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
-                <Form.Group controlId="formFile">
-                  <Form.Label style={{ color: "gray", fontWeight: "600" }}>
-                    Upload csv,xlsx
-                  </Form.Label>
-                  <Form.Control
-                    type="file"
-                    accept=".xls,.xlsx,.csv"
-                    onChange={handleFileChange}
-                  />
-                </Form.Group>
-              </Grid> */}
                 <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
                   <DatePickerComponent
                     label={"From Date"}
@@ -420,12 +395,6 @@ const AccordionComponent = ({ title, trade }) => {
                     value={toDate}
                     onChange={handleToDate}
                   />
-                  {/* <DropDown
-                  arr={arr}
-                  label={"Type"}
-                  value={type}
-                  onChange={(e) => setType(e.target.value)}
-                /> */}
                 </Grid>
                 <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
                   <DropDown
@@ -435,38 +404,33 @@ const AccordionComponent = ({ title, trade }) => {
                     values={UserIDtype}
                     onChanges={(e) => {
                       setUserIDType(e.target.value);
+                      setTagType("");
                       setPortFolioType("");
                     }}
                   />
                 </Grid>
                 <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
-                  {/* <InputComponent
-                  label={"Search"}
-                  value={filterValue}
-                  onChange={(e) => setFilterValue(e.target.value)}
-                  type
-                /> */}
                   <DropDown
-                    arr={Portfolio}
-                    label={"Portfolio_Name"}
-                    value={PortFoliotype}
-                    onChange={(e) => {
-                      setPortFolioType(e.target.value);
-                      getUploadFilesLedger();
-                    }}
+                    arr={tags}
+                    label={"Tag"}
+                    value={tagType}
+                    onChange={(e) => handleChange(e)}
                   />
                 </Grid>
-
-                {/* <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
-                <InputComponent
-                  label={"Search"}
-                  value={filterValue}
-                  onChange={(e) => setFilterValue(e.target.value)}
-                  type
-                />
-              </Grid> */}
+                {tagType && (
+                  <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
+                    <DropDown
+                      arr={Portfolio}
+                      label={"Portfolio_Name"}
+                      value={PortFoliotype}
+                      onChange={(e) => {
+                        setPortFolioType(e.target.value);
+                        // getUploadFilesLedger();
+                      }}
+                    />
+                  </Grid>
+                )}
               </Grid>
-              {/* {UserIDtype && PortFoliotype && ( */}
               <Box sx={{ padding: "15px" }}>
                 {!loading && data.length === 0 ? (
                   <Typography sx={{ color: "white", padding: "6rem" }}>
@@ -546,20 +510,16 @@ const AccordionComponent = ({ title, trade }) => {
                       }}
                     >
                       <Typography
-                        sx={{ paddingRight: "10rem", color: "#90EE90" }}
+                        sx={{ paddingRight: "10rem", color: "#90EE90",fontSize:"20px",fontWeight:"bold"}}
                       >
                         {/* {`Total Profit :  ${Math.round(sellValue)}`} */}
                         Total Profit: {sellValue.toFixed(2)}
                         &nbsp;
                       </Typography>
-                      {/* <Typography
-                          sx={{ color: "red" }}
-                        >{`Total Loss : -${Math.round(loss)}`}</Typography> */}
                     </div>
                   </Paper>
                 )}
               </Box>
-              {/* )} */}
             </Card>
           </>
         )}
