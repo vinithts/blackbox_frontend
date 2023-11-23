@@ -462,7 +462,6 @@ const AccordionComponent = ({ title, trade }) => {
                           </TableRow>
                         </TableHead>
                         {filteredData
-
                           .slice(
                             page * rowsPerPage,
                             page * rowsPerPage + rowsPerPage

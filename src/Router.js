@@ -24,6 +24,7 @@ import AddCustomerNew from "./Pages/AddCustomerNew";
 import ViewCustomer from "./Pages/ViewCustomerDetails";
 import Report from "./Report";
 import ViewCustomerDetails from "./Pages/ViewCustomerDetails";
+import ViewUploads from "./Pages/ViewUploads";
 
 const Router = () => {
   return useRoutes([
@@ -37,7 +38,7 @@ const Router = () => {
         { path: "upload", element: <Upload /> },
         { path: "addcustomernew", element: <AddCustomerNew /> },
         { path: "viewcustomerDetails", element: <ViewCustomerDetails /> },
-        // { path: "report", element:<Report/>}
+         { path: "viewupload", element:<ViewUploads/>}
       ],
     },
   ]);

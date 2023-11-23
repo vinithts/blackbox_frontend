@@ -50,6 +50,11 @@ export const NavConfig = [
         path: "/Dashboard/upload",
         icon: <FileUpload color="white" />,
       },
+      {
+        name: "ViewUploads",
+        path: "/Dashboard/viewupload",
+        icon: <Streetview color="white" />,
+      },
     ],
   },
 ];
