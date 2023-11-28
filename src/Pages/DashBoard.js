@@ -35,42 +35,44 @@ const DashBoard = () => {
   useState(() => {
     chartsValues();
   }, []);
-  const filterUserId = getLedger.map((userId) => userId.User_ID);
-  const userIDset = new Set(filterUserId);
-  const uniqueId = [...userIDset];
-  console.log(uniqueId);
+  // const filterUserId = getLedger.map((userId) => userId.User_ID);
+  // const userIDset = new Set(filterUserId);
+  // const uniqueId = [...userIDset];
+  // console.log(uniqueId);
 
   const filterUserIdAvgValues = getLedger.map((data) => {
     if (data.User_ID) {
       return data.Avg_Price;
     }
   });
-  console.log(filterUserIdAvgValues);
+  
   const filterDistintValue = (data) => {
     const obj = {};
     for (const char of data) {
       if (obj[char.User_ID]) {
-        obj[char.User_ID] += Number(char.Avg_Price);
+        if (char.Txn === "BUY") {
+          obj[char.User_ID] += Number(char.Avg_Price) * -Number(char.Qty);
+        } else {
+          obj[char.User_ID] += Number(char.Avg_Price) * Number(char.Qty);
+        }
       } else {
-        obj[char.User_ID] = Number(char.Avg_Price);
+        if (char.Txn === "BUY") {
+          obj[char.User_ID] = Number(char.Avg_Price) * -Number(char.Qty);
+        } else {
+          obj[char.User_ID] = Number(char.Avg_Price) * Number(char.Qty);
+        }
       }
+      
     }
-    // return obj;
     const keys = Object.keys(obj);
     const values = Object.values(obj);
+  
     return [keys, values];
   };
+  
   const result = filterDistintValue(getLedger);
-  console.log("result", result);
-  // const userIDData = [];
-  // for (let i = 0; i < filterUserId.length; i++) {
-  //   for (let j = 0; j < filterUserId.length; j++) {
-  //     if (filterUserId[i] == filterUserId[j]) {
-  //       userIDData.push(filterUserId[i]);
-  //     }
-  //   }
-  // }
-  // console.log(filterUserIdAvgValues);
+  // console.log("result", result);
+ console.log(result);
 
   const drawerWidth = 240;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -83,114 +85,11 @@ const DashBoard = () => {
   const handleNav = (nav) => {
     navigate(nav);
   };
-  // const drawer = (
-  //   <div>
-  //     <Toolbar />
-  //     <Divider />
-  //     <List>
-  //       {NavConfig.map((text, index) => (
-  //         <ListItem key={text} disablePadding>
-  //           <ListItemButton onClick={() => handleNav(text.path)}>
-  //             <ListItemIcon color="white" sx={{ color: "white" }}>
-  //               {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-  //               {text.icon}
-  //             </ListItemIcon>
-  //             <ListItemText primary={text.name} />
-  //           </ListItemButton>
-  //         </ListItem>
-  //       ))}
-  //     </List>
-  //   </div>
-  // );
+
 
   return (
     <>
-      {/* <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar
-          position="fixed"
-          sx={{
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
-            ml: { sm: `${drawerWidth}px` },
-            background: "#25242D",
-          }}
-        >
-          {" "}
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{ fontWeight: "600" }}
-            >
-              Black Box
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
-        <Box
-          component="nav"
-          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-          aria-label="mailbox folders"
-        >
-          <Drawer
-            // container={container}
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-                background: "#25242D",
-              },
-            }}
-          >
-            {drawer}
-          </Drawer>
-          <Drawer
-            variant="permanent"
-            sx={{
-              display: { xs: "none", sm: "block" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-                background: "#25242D",
-                color: "white",
-              },
-            }}
-            open
-          >
-            {drawer}
-          </Drawer>
-        </Box>
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            p: 3,
-            width: { sm: `calc(100% - ${drawerWidth}px)` },
-          }}
-        >
-          {" "}
-          <Toolbar />
-         
-          <Outlet />
-        </Box>
-      </Box> */}
+      
       <div>
         <br />
         <DashboardApplet />

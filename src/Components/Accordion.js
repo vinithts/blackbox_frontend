@@ -24,7 +24,6 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 export async function getCustomersDetails() {
   try {
     const result = await instance.get(`/api/getCustomersDetails`);
-
     return result;
   } catch (e) {
     console.log("err", e);
@@ -34,6 +33,7 @@ export async function getCustomersDetails() {
     });
   }
 }
+
 const AccordionComponent = ({ title, trade }) => {
   const [data, setData] = useState([]);
   const [keys, setKeys] = useState([]);
@@ -42,7 +42,6 @@ const AccordionComponent = ({ title, trade }) => {
   const [loading, setLoading] = useState(false);
   const [UserIDtype, setUserIDType] = useState("");
   const [tagType, setTagType] = useState("");
-  const [PortFoliotype, setPortFolioType] = useState("");
 
   function parseCustomDate(dateStr) {
     const dateComponents = dateStr.match(
@@ -81,7 +80,7 @@ const AccordionComponent = ({ title, trade }) => {
     setToDate(e.target.value);
   };
   const handleChange = (e) => {
-    getPortifolioTag(e.target.value);
+    // getPortifolioTag(e.target.value);
     setTagType(e.target.value);
     setUserIDType("");
   };
@@ -102,13 +101,10 @@ const AccordionComponent = ({ title, trade }) => {
         }
       }
     });
-    // const removeDuplicatePortfolio = new Set(Portfolio_Name);
-    // const updatePortfolio = [...removeDuplicatePortfolio];
     const removeDuplicateUserId = new Set(user);
     const updateUserId = [...removeDuplicateUserId];
     const removeDuplicateTags = new Set(tags);
     const updateTags = [...removeDuplicateTags];
-    // setPortfolio(["All", ...updatePortfolio]);
     setUserId(["All", ...updateUserId]);
     setTags(["All", ...updateTags]);
     return result;
@@ -135,101 +131,24 @@ const AccordionComponent = ({ title, trade }) => {
     }
   };
 
-  const columnNames = [
-    "Portfolio Name",
-    "Leg ID",
-    "Exchange",
-    "Exchange Symbol",
-    "Product",
-    "Order Type",
-    "Order ID",
-    "Time",
-    "Txn",
-    "Qty",
-    "Filled Qty",
-    "Exchg Time",
-    "Avg Price",
-    "Status",
-    "Limit Price",
-    "Order Failed",
-    "User ID",
-    "User Alias",
-    "Remarks",
-    "Tag",
-  ];
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = async (event) => {
-      const binaryString = event.target.result;
-      const workBook = XLSX.read(binaryString, { type: "binary" });
-      const sheetName = workBook.SheetNames[0];
-      const sheet = workBook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-      function ensureMandatoryKeys(obj) {
-        for (const columnName of columnNames) {
-          if (!obj.hasOwnProperty(columnName)) {
-            obj[columnName] = "-";
-          }
-        }
-      }
-
-      for (const obj of jsonData) {
-        ensureMandatoryKeys(obj);
-      }
-
-      try {
-        const response = await instance.post(`/api/uploadFilesLedger`, {
-          data: jsonData,
-        });
-        if (response.status === 200) {
-          getUploadFilesLedger();
-          toast.success("Uploaded Successfully !", {
-            position: toast.POSITION.BOTTOM_RIGHT,
-            className: "foo-bar",
-          });
-        }
-      } catch (e) {
-        console.log(e);
-        toast.error("Something went to wrong !", {
-          position: toast.POSITION.BOTTOM_RIGHT,
-          className: "foo-bar",
-        });
-      }
-    };
-
-    if (file) {
-      reader.readAsBinaryString(file);
-    }
-  };
   useEffect(() => {
     if (data[0]) {
       setKeys(Object.keys(data[0]));
     }
   }, [data]);
-
   const handleFromDate = (e) => {
     setFromDate(e.target.value);
   };
 
   const filterDatasValue = (data) => {
-    const fieldsToSearch = ["Portfolio_Name", "User_ID"];
+    const fieldsToSearch = ["User_ID", "Tag"];
     if (UserIDtype === "All" || tagType === "All") {
-      if (PortFoliotype.length > 0) {
-        return fieldsToSearch?.some((field) =>
-          String(data[field])
-            ?.toLowerCase()
-            ?.includes(PortFoliotype?.toLowerCase() || UserIDtype.toLowerCase())
-        );
-      }
       return data;
     } else {
       return fieldsToSearch?.some((field) =>
         String(data[field])
           ?.toLowerCase()
-          ?.includes(PortFoliotype?.toLowerCase() || UserIDtype.toLowerCase())
+          ?.includes(tagType?.toLowerCase() || UserIDtype.toLowerCase())
       );
     }
   };
@@ -249,7 +168,6 @@ const AccordionComponent = ({ title, trade }) => {
 
   const [cusKey, setCusKey] = useState([]);
   const [cusDetails, setCusDetails] = useState([]);
-
   useEffect(() => {
     setLoading(true);
     getCustomersDetails()
@@ -264,23 +182,6 @@ const AccordionComponent = ({ title, trade }) => {
         console.log(e);
       });
   }, []);
-  const getPortifolioTag = async (e) => {
-    try {
-      const response = await instance.get(`/api/protfolioName/${e}`);
-      if (response.status === 200) {
-        const array = response.data.map((a) => a.Portfolio_Name);
-        const uniquePortfolios = new Set(array);
-        const uniquePortfolioArray = [...uniquePortfolios];
-        setPortfolio(uniquePortfolioArray);
-      }
-    } catch (e) {
-      console.log(e);
-      toast.error("Something went to wrong !", {
-        position: toast.POSITION.BOTTOM_RIGHT,
-        className: "foo-bar",
-      });
-    }
-  };
 
   const sellValue = useMemo(() => {
     return (
@@ -300,8 +201,8 @@ const AccordionComponent = ({ title, trade }) => {
     getUploadFilesLedger();
     dropDownData(filteredData);
   }, [fromDate, toDate, page || rowsPerPage]);
-
   const arr = ["Portfolio_Name", "Order_ID", "User_ID"];
+
   return (
     <>
       {loading && <Loading />}
@@ -405,31 +306,17 @@ const AccordionComponent = ({ title, trade }) => {
                     onChanges={(e) => {
                       setUserIDType(e.target.value);
                       setTagType("");
-                      setPortFolioType("");
                     }}
                   />
                 </Grid>
                 <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
                   <DropDown
                     arr={tags}
-                    label={"Tag"}
+                    label={"Portfolio"}
                     value={tagType}
                     onChange={(e) => handleChange(e)}
                   />
                 </Grid>
-                {tagType && (
-                  <Grid item xl={3} lg={3} md={3} sm={12} xs={12}>
-                    <DropDown
-                      arr={Portfolio}
-                      label={"Portfolio_Name"}
-                      value={PortFoliotype}
-                      onChange={(e) => {
-                        setPortFolioType(e.target.value);
-                        // getUploadFilesLedger();
-                      }}
-                    />
-                  </Grid>
-                )}
               </Grid>
               <Box sx={{ padding: "15px" }}>
                 {!loading && data.length === 0 ? (
@@ -475,14 +362,18 @@ const AccordionComponent = ({ title, trade }) => {
                                     key={Colindex}
                                     sx={{
                                       background: "#25242D",
-                                      color: "gray",
+                                      color: "white",
                                       textAlign: "center",
                                       // border: "1px solid white",
                                     }}
                                   >
                                     {allData === "Remarks"
-                                      ? value.Remarks.slice(0, 15)
-                                      : value[allData]}
+                                      ? value.Remarks?.slice(0, 15)
+                                      : allData === "Netpl"
+                                      ? parseFloat(value[allData]).toFixed(2)
+                                      : value[allData] !== null
+                                      ? value[allData]
+                                      : "--"}
                                   </TableCell>
                                 ))}
                               </TableRow>
@@ -509,7 +400,12 @@ const AccordionComponent = ({ title, trade }) => {
                       }}
                     >
                       <Typography
-                        sx={{ paddingRight: "10rem", color: "#90EE90",fontSize:"20px",fontWeight:"bold"}}
+                        sx={{
+                          paddingRight: "10rem",
+                          color: "#90EE90",
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                        }}
                       >
                         {/* {`Total Profit :  ${Math.round(sellValue)}`} */}
                         Total Profit: {sellValue.toFixed(2)}

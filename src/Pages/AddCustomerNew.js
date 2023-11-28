@@ -1,5 +1,5 @@
 import { Box, Button, Card, Grid, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import InputComponent from "../Components/InputComponent";
 import DropDown from "../Components/DropDown";
 import { instance } from "../Api";
@@ -8,6 +8,9 @@ import { toast } from "react-toastify";
 import Loading from "../Components/Loading";
 
 const AddCustomerNew = () => {
+  const [data, setData] = useState([]);
+  const [userId, setUserId] = useState([]);
+  const [UserIDtype, setUserIDType] = useState("");
   const cardStyle = {
     width: "50%",
     height: "63vh",
@@ -44,28 +47,78 @@ const AddCustomerNew = () => {
     user_id: "",
     amt: "",
   });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setDataObject({ ...dataObject, [name]: value });
   };
   const [loading, setLoading] = useState(false);
   const createCustomers = async () => {
+    // Validation checks
+    if (!dataObject.name || 
+      !dataObject.email || 
+      !dataObject.mobile ||
+      !dataObject.address || 
+      !dataObject.gender ||
+      !UserIDtype ||
+      !dataObject.dob ||
+      !dataObject.amt) {
+      toast.error("Please fill in all fields!", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
+      setLoading(false);
+      return;
+    }
+  
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(dataObject.email)) {
+      toast.error("Please enter a valid email address!", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
+      setLoading(false);
+      return;
+    }
+  
+    // Mobile number validation
+    const mobileRegex = /^[0-9]{10}$/;
+    if (!mobileRegex.test(dataObject.mobile)) {
+      toast.error("Please enter a valid 10-digit mobile number!", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
+      setLoading(false);
+      return;
+    }
+  
+    // Amount validation
+    const amountRegex = /^\d+(\.\d{1,2})?$/;
+    if (!amountRegex.test(dataObject.amt)) {
+      toast.error("Please enter a valid amount!", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
+      setLoading(false);
+      return;
+    }
+  
     setLoading(true);
     try {
       const response = await instance.post(
         `/api/createCustomer`,
-
-        dataObject,
-
+        { ...dataObject, user_id: UserIDtype },
         { headers: { "Content-Type": "application/json" } }
       );
+  
       if (response.status === 200) {
         toast.success("Customer Created Successfully !", {
           position: toast.POSITION.BOTTOM_RIGHT,
           className: "foo-bar",
         });
+  
         setDataObject({
-          ...dataObject,
           name: "",
           email: "",
           mobile: "",
@@ -75,13 +128,41 @@ const AddCustomerNew = () => {
           user_id: "",
           amt: "",
         });
+  
         setTimeout(() => {
           setLoading(false);
         }, 2000);
       }
-      // getCustomersDetails();
-
-      //   handleClose();
+    } catch (e) {
+      console.log(e);
+      toast.error("Something went wrong!", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+        className: "foo-bar",
+      });
+      setLoading(false);
+    }
+  };
+  
+  const gender = ["Male", "Female"];
+  let user = [];
+  const dropDownData = (val) => {
+    const result = val.map((e) => {
+      if (e.User_ID) {
+        user.push(e.User_ID);
+      }
+    });
+    const removeDuplicateUserId = new Set(user);
+    const updateUserId = [...removeDuplicateUserId];
+    setUserId([...updateUserId]);
+    return result;
+  };
+  const getUploadFilesLedger = async () => {
+    try {
+      const response = await instance.get(`/api/getUploadFilesLedger`);
+      if (response.status === 200) {
+        setData(response.data);
+        dropDownData(response.data);
+      }
     } catch (e) {
       console.log(e);
       toast.error("Something went to wrong !", {
@@ -90,7 +171,18 @@ const AddCustomerNew = () => {
       });
     }
   };
-  const gender = ["Male", "Female"];
+  const filterDatasValue = (data) => {
+    const fieldsToSearch = ["Portfolio_Name", "User_ID", "Tag"];
+    return fieldsToSearch?.some((field) =>
+      String(data[field])?.toLowerCase()?.includes(UserIDtype.toLowerCase())
+    );
+  };
+
+  const filteredData = data?.filter((filData) => filterDatasValue(filData));
+  useEffect(() => {
+    getUploadFilesLedger();
+    dropDownData(filteredData);
+  }, []);
   return (
     <div>
       <Card sx={cardStyle}>
@@ -115,11 +207,14 @@ const AddCustomerNew = () => {
               />
             </Grid>
             <Grid item xl={6} lg={6} md={6} sm={6} xs={6}>
-              <InputComponent
-                label={"User ID"}
-                name={"user_id"}
-                value={dataObject.user_id}
-                onChange={handleChange}
+              <DropDown
+                arrays={userId}
+                other
+                label={"User_ID"}
+                values={UserIDtype}
+                onChanges={(e) => {
+                  setUserIDType(e.target.value);
+                }}
               />
             </Grid>
             <Grid item xl={6} lg={6} md={6} sm={6} xs={6}>
@@ -197,4 +292,4 @@ const AddCustomerNew = () => {
   );
 };
 
-export default AddCustomerNew
+export default AddCustomerNew;

@@ -79,22 +79,25 @@ const UserWiseCharts = () => {
 
   // --------
 
-  const selectedUserIdAva_Price = (data) => {
+  const calculateBSMTM = (data) => {
     const obj = {};
     for (const char of data) {
       if (char.User_ID === PortFoliotype) {
-        // console.log("222222222222222222222", char.Avg_Price);
         if (!obj[char.User_ID]) {
           obj[char.User_ID] = 0;
         }
-        obj[char.User_ID] += parseFloat(char.Avg_Price);
+        if (char.Txn === "BUY") {
+          obj[char.User_ID] += Number(char.Avg_Price) * -Number(char.Qty);
+        } else {
+          obj[char.User_ID] += Number(char.Avg_Price) * Number(char.Qty);
+        }
       }
     }
     const key = Object.keys(obj);
     const value = Object.values(obj);
     return [key, value];
   };
-  const result = selectedUserIdAva_Price(getLedger);
+  const result = calculateBSMTM(getLedger);
   console.log(result[1]);
   // --------
   const [value, setValue] = useState([]);
@@ -103,6 +106,7 @@ const UserWiseCharts = () => {
     const data = e.target.value;
     // selectedUserIdAva_Price(getLedger);
     setPortFolioType(e.target.value);
+    setDateRange("");
     console.log(typeof data);
     const result = getLedger
       .filter((e) => e.User_ID === data)
@@ -205,14 +209,6 @@ const UserWiseCharts = () => {
     });
   };
 
-  // ----------------
-  // const handleDownloadXLSX = () => {
-  //   const ws = XLSX.utils.aoa_to_sheet(exportTableHeading);
-  //   const wb = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(wb, ws, "Sheet 1");
-  //   XLSX.writeFile(wb, "data.xlsx");
-  // };
-  // ----------------
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
     // doc.text(10, 10, "Report");
@@ -356,50 +352,6 @@ const UserWiseCharts = () => {
         </Box>
         <br />
 
-        {/* <Charts
-        data1={filterUserIdAvgValues}
-        downData1={uniqueId}
-        userWise
-        data2={userIdWiseFilter}
-      /> */}
-        {/* <div
-        style={{
-          position: "absolute",
-          left: "20%",
-          color: "white",
-          display: "none",
-        }}
-      >
-        <h2 style={{ textAlign: "center" }}>{exportData.exportUserId}</h2>
-        <table>
-          <thead>
-            <tr>
-              {exportTableHeading[0].map((item, index) => (
-                <th
-                  key={index}
-                  style={{ padding: "15px", textAlign: "center" }}
-                >
-                  {item}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {exportTableHeading.slice(1).map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {row.map((item, index) => (
-                <td
-                  key={index}
-                  style={{ padding: "15px", textAlign: "center" }}
-                >
-                  {item}
-                </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div> */}
         {PortFoliotype && dateRange && (
           <Charts
             data1={result}
