@@ -1,5 +1,7 @@
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
-    Box,
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -7,16 +9,19 @@ import {
   TableHead,
   TableRow,
   Typography,
+  TablePagination,
 } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import Loading from "../Components/Loading";
 import { instance } from "../Api";
+import { Paper } from "@material-ui/core";
 
 function ViewSelectedFiles() {
-  const getfiledetailsById = async () => {
+  const { id } = useParams();
+
+  const getfiledetailsById = async (id) => {
     try {
-      const result = await instance.get(`/api/ledgerDataByFile/16`);
+      const result = await instance.get(`/api/ledgerDataByFile/${id}`);
       return result;
     } catch (e) {
       console.log("err", e);
@@ -26,41 +31,78 @@ function ViewSelectedFiles() {
       });
     }
   };
+
   const [cusKey, setCusKey] = useState([]);
   const [cusDetails, setCusDetails] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
   useEffect(() => {
     setLoading(true);
-    getfiledetailsById()
+    getfiledetailsById(id)
       .then((res) => {
         if (res && res.status === 200) {
-          setCusDetails(res.data);
-          setCusKey(Object.keys(res.data[0]));
+          const modifiedData = res.data.map(
+            ({ id, tradeFileId, ...rest }) => rest
+          );
+
+          setCusDetails(modifiedData);
+          setCusKey(Object.keys(modifiedData[0])); // Assuming modifiedData[0] is not null or undefined
           setLoading(false);
         }
       })
       .catch((e) => {
         console.log(e);
       });
-  }, []);
+  }, [id]);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <>
       {loading && <Loading />}
       <div>
-        <TableContainer sx={{ maxHeight: 600 }}>
+      <Box sx={{ padding: "10px" }}>
+          <Typography
+            variant="h4"
+            sx={{ color: "white", textAlign: "center", fontWeight: "600" }}
+          >
+            File Data's
+          </Typography>
+           {/* <Paper sx={{ overflow: "hidden", border: "1px solid #D9D9D9" }}> */}
+          <TableContainer sx={{ maxHeight: 600, marginTop: "4rem", border: "1px solid #D9D9D9" }}>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
+                <TableCell
+                  sx={{
+                    background: " rgb(23, 23, 33)",
+                    color: "white",
+                    fontWeight: "600",
+                    textAlign: "center",
+                    // border: "1px solid white",
+                  }}
+                >
+                  S.No
+                </TableCell>
                 {cusKey.map((keys, index) => (
                   <TableCell
                     key={keys.id}
-                    align={"center"}
-                    style={{
-                      minWidth: 170,
-                      background: "#25242D",
-                      color: "white",
-                      fontWeight: "600",
-                    }}
+                    sx={{
+                        background: " rgb(23, 23, 33)",
+                        color: "white",
+                        fontWeight: "600",
+                        textAlign: "center",
+                        // border: "1px solid white",
+                      }}
                   >
                     {keys.charAt(0).toUpperCase() + keys.slice(1)}
                   </TableCell>
@@ -68,16 +110,40 @@ function ViewSelectedFiles() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {cusDetails?.map((pair, i) => (
+            {(rowsPerPage > 0
+                ? cusDetails.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
+                : cusDetails
+              ).map((pair, i) => (
                 <TableRow key={i}>
-                  {cusKey?.map((key, index) => (
+                  <TableCell
+                   key={i}
+                    align="center"
+                    sx={{
+                      background: "#25242D",
+                      color: "white",
+                      textAlign: "center",
+                      // border: "1px solid white",
+                    }}
+                  >
+                    {i + 1 + page * rowsPerPage}
+                  </TableCell>
+                  {cusKey.map((key, index) => (
                     <TableCell
-                      sx={{ background: "#25242D", color: "gray" }}
+                      sx={{ background: "#25242D", color: "white" }}
                       key={index}
                       align="center"
                       style={{ minWidth: 170 }}
                     >
-                      {pair[key]}
+                      {key !== "TradeFileId" && pair[key] != null
+                        ? key === "Remarks"
+                          ? pair[key].slice(0, 15)
+                          : key === "Netpl"
+                          ? parseFloat(pair[key]).toFixed(2)
+                          : pair[key]
+                        : "--"}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -85,7 +151,19 @@ function ViewSelectedFiles() {
             </TableBody>
           </Table>
         </TableContainer>
-      </div>
+         <TablePagination
+            rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+            component="div"
+            count={cusDetails.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{ background: "#25242D", color: "white",fontSize:"20px" }}
+          />
+        {/* </Paper>   */}
+         </Box>
+         </div>
     </>
   );
 }

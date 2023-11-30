@@ -80,9 +80,12 @@ const UserWiseCharts = () => {
   // --------
 
   const calculateBSMTM = (data) => {
+    console.log(data);
+    console.log(PortFoliotype);
     const obj = {};
     for (const char of data) {
       if (char.User_ID === PortFoliotype) {
+        console.log(PortFoliotype);
         if (!obj[char.User_ID]) {
           obj[char.User_ID] = 0;
         }
@@ -95,12 +98,13 @@ const UserWiseCharts = () => {
     }
     const key = Object.keys(obj);
     const value = Object.values(obj);
+    console.log(obj,key,value);
     return [key, value];
   };
   const result = calculateBSMTM(getLedger);
   console.log(result[1]);
   // --------
-  const [value, setValue] = useState([]);
+
 
   const handleUserIdChange = (e) => {
     const data = e.target.value;
@@ -108,15 +112,12 @@ const UserWiseCharts = () => {
     setPortFolioType(e.target.value);
     setDateRange("");
     console.log(typeof data);
-    const result = getLedger
-      .filter((e) => e.User_ID === data)
-      .map((data) => data.Avg_Price)
-      .reduce((a, c) => Number(a) + Number(c), 0);
-    setValue(result);
-    setExportData({
+    const result = calculateBSMTM(getLedger);
+    console.log('adsfsadgfsfgsdfA',result);
+   setExportData({
       ...exportData,
       exportUserId: data,
-      exportAvg: Math.round(result.toString()),
+      exportAvg: result[1].toString(),
     });
   };
   const userIdWiseFilter = getLedger
@@ -141,17 +142,13 @@ const UserWiseCharts = () => {
   const [exportData, setExportData] = useState({
     exportUserId: "",
     exportDateRange: "",
-    exportFromDate: "-",
-    exportToDate: "-",
     exportAvg: "",
   });
   const exportTableHeading = [
-    ["UserId", "DateRange", "FromDate", "ToDate", "AvgPrice"],
+    ["UserId", "DateRange", "B/S MTM"],
     [
       exportData.exportUserId,
       exportData.exportDateRange,
-      exportData.exportFromDate,
-      exportData.exportToDate,
       exportData.exportAvg,
     ],
   ];
@@ -210,6 +207,7 @@ const UserWiseCharts = () => {
   };
 
   const handleDownloadPDF = () => {
+    console.log(exportTableHeading);
     const doc = new jsPDF();
     // doc.text(10, 10, "Report");
     const imgData = logo;
@@ -219,7 +217,7 @@ const UserWiseCharts = () => {
       startY: 60,
       head: [exportTableHeading[0]],
       body: exportTableHeading.slice(1),
-    });
+     });
     doc.save("data.pdf");
     setTimeout(() => {
       setLoading(false);
@@ -294,7 +292,7 @@ const UserWiseCharts = () => {
                 More
               </Button>
             </Grid>
-            {count >= 1 && (
+            {/* {count >= 1 && (
               <>
                 {" "}
                 <Grid xl={4} lg={4} md={4} sm={12} xs={12} p={1.2}>
@@ -324,7 +322,7 @@ const UserWiseCharts = () => {
                       });
                     }}
                   />
-                </Grid>
+                </Grid> */}
                 <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
                   <DropDown
                     arr={export_Type}
@@ -346,8 +344,8 @@ const UserWiseCharts = () => {
                     </Button>
                   </Grid>
                 )}
-              </>
-            )}
+              {/* </>
+            )} */}
           </Grid>
         </Box>
         <br />

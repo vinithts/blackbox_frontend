@@ -40,7 +40,7 @@ const Router = () => {
         { path: "addcustomernew", element: <AddCustomerNew /> },
         { path: "viewcustomerDetails", element: <ViewCustomerDetails /> },
          { path: "viewupload", element:<ViewUploads/>},
-         { path: "ViewSelectedFiles", element:<ViewSelectedFiles/>}
+         { path: "ViewSelectedFiles/:id", element:<ViewSelectedFiles/>}
       ],
     },
   ]);
